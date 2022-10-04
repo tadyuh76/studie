@@ -9,6 +9,7 @@ final List<Room> rooms = [
   Room(
     id: '1',
     name: 'Ôn tập Lí 12 Ôn tập Lí 12 Ôn tập Lí 12 Ôn tập Lí 12',
+    coverColor: 'blue',
     description: 'Ai ôn lí chung hông?',
     tags: ['Lý 12', 'Học kỳ 1'],
     maxPeople: 16,
@@ -19,6 +20,7 @@ final List<Room> rooms = [
   Room(
     id: '2',
     name: 'Ôn tập Hóa 12',
+    coverColor: 'blue',
     description: 'Ai ôn hóa chung hông?',
     tags: ['Hóa 12', 'Học kỳ 1'],
     maxPeople: 7,
@@ -29,6 +31,7 @@ final List<Room> rooms = [
   Room(
     id: '3',
     name: 'Ôn tập Toán 12',
+    coverColor: 'blue',
     description: 'Ai ôn Toán chung hông?',
     tags: ['Toán 12', 'Học kỳ 1'],
     maxPeople: 4,
@@ -39,6 +42,7 @@ final List<Room> rooms = [
   Room(
     id: '4',
     name: 'Đọc sách cùng mình hihi hihi hihi',
+    coverColor: 'blue',
     description: 'Cùng đọc sách nào',
     tags: ['Đọc sách'],
     maxPeople: 5,

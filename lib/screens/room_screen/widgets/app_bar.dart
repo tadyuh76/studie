@@ -36,7 +36,7 @@ class RoomAppBar extends StatelessWidget {
               horizontal: kDefaultPadding,
             ),
             decoration: BoxDecoration(
-              color: kSecondaryColor,
+              color: kPrimaryColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: GestureDetector(

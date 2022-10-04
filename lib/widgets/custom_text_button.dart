@@ -5,15 +5,19 @@ class CustomTextButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   final bool primary;
+  final bool rounded;
   final bool loading;
   final bool disabled;
+  final bool large;
   const CustomTextButton({
     super.key,
     required this.text,
     required this.onTap,
-    required this.primary,
+    this.primary = false,
     this.loading = false,
     this.disabled = false,
+    this.rounded = false,
+    this.large = false,
   });
 
   @override
@@ -21,14 +25,16 @@ class CustomTextButton extends StatelessWidget {
     return IgnorePointer(
       ignoring: disabled,
       child: Material(
+        clipBehavior: Clip.hardEdge,
         color: primary ? kPrimaryColor : kLightGrey,
-        borderRadius: BorderRadius.circular(40),
+        borderRadius: BorderRadius.circular(rounded ? 40 : 10),
         child: InkWell(
           onTap: onTap,
           child: Container(
-            width: double.infinity,
+            // width: double.infinity,
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding:
+                EdgeInsets.symmetric(vertical: large ? 15 : 10, horizontal: 20),
             child: loading
                 ? const SizedBox(
                     width: 20,

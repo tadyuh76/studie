@@ -81,6 +81,7 @@ class _SignInScreenState extends State<SignInScreen> {
               primary: true,
               loading: _isSigningIn,
               disabled: _isSigningIn,
+              large: true,
             ),
             const SizedBox(height: kDefaultPadding),
             Row(
@@ -101,7 +102,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: const Text(
                     'Đăng kí',
                     style: TextStyle(
-                      color: kSecondaryColor,
+                      color: kPrimaryColor,
                       fontSize: 12,
                     ),
                   ),

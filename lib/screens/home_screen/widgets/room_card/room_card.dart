@@ -80,18 +80,19 @@ class RoomCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: 100,
+          height: 80,
           width: double.infinity,
           alignment: Alignment.topLeft,
           padding: const EdgeInsets.all(kDefaultPadding),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            image: DecorationImage(
-              image: AssetImage(
-                'assets/images/${Random().nextInt(5) + 1}.png',
-              ),
-              fit: BoxFit.cover,
-            ),
+            color: room.color,
+            // image: DecorationImage(
+            //   image: AssetImage(
+            //     'assets/images/${Random().nextInt(5) + 1}.png',
+            //   ),
+            //   fit: BoxFit.cover,
+            // ),
           ),
           child: Text(
             room.name,
@@ -100,7 +101,7 @@ class RoomCard extends StatelessWidget {
             style: const TextStyle(
               color: kWhite,
               fontWeight: FontWeight.bold,
-              fontSize: 18,
+              fontSize: 16,
             ),
           ),
         ),

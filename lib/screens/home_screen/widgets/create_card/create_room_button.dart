@@ -18,19 +18,20 @@ class CreateRoomButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: kDefaultPadding,
-            vertical: kMediumPadding,
+            vertical: kSmallPadding,
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset('assets/icons/add.svg', color: kTextColor),
+              SvgPicture.asset('assets/icons/add.svg', color: kPrimaryColor),
               const SizedBox(width: kMediumPadding),
               const Text(
                 'Tạo phòng học mới',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: kTextColor,
-                  fontSize: 14,
+                  color: kPrimaryColor,
+                  fontSize: 16,
                 ),
               )
             ],
