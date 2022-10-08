@@ -10,6 +10,7 @@ import 'package:studie/screens/room_screen/widgets/tab_pages/camera_view.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/chats.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/file_view.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/whiteboard.dart';
+import 'package:studie/services/db_methods.dart';
 
 const Map<String, Widget> tabs = {
   "camera": CameraViewPage(),
@@ -45,6 +46,12 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    DBMethods().leaveRoom(widget.room.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -60,17 +67,27 @@ class _RoomScreenState extends State<RoomScreen> {
               children: [
                 const Pomodoro(),
                 const SizedBox(width: kMediumPadding),
-                const StudySession(),
+                const GoalSession(),
                 const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: SvgPicture.asset(
-                    'assets/icons/more_menu.svg',
-                    color: kTextColor,
-                    width: 50,
-                    height: 50,
+                SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: Material(
+                    color: kLightGrey,
+                    clipBehavior: Clip.hardEdge,
+                    borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      onTap: () {},
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'assets/icons/popup_menu.svg',
+                          color: kTextColor,
+                          width: 32,
+                          height: 32,
+                        ),
+                      ),
+                    ),
                   ),
-                  splashRadius: 25,
                 )
               ],
             ),

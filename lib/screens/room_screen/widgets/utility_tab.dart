@@ -26,7 +26,7 @@ class UtilityTab extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SvgPicture.asset('assets/icons/$icon.svg', color: kDarkGrey),
+          SvgPicture.asset('assets/icons/$icon.svg', color: kBlack),
           const SizedBox(width: kMediumPadding),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +35,7 @@ class UtilityTab extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  color: kDarkGrey,
+                  color: kBlack,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),

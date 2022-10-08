@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
@@ -32,8 +30,8 @@ class RoomCard extends StatelessWidget {
               renderCardCover(),
               renderUserAvatar(),
               NumberOfPeopleInRoom(
-                numPeople: room.numPeople,
-                maxPeople: room.maxPeople,
+                curParticipants: room.curParticipants,
+                maxParticipants: room.maxParticipants,
               ),
             ],
           ),
@@ -65,12 +63,12 @@ class RoomCard extends StatelessWidget {
   }
 
   Widget renderUserAvatar() {
-    return const Positioned(
+    return Positioned(
       bottom: -20,
       left: 20,
       child: CircleAvatar(
         radius: 20,
-        backgroundImage: AssetImage('assets/images/avatar.jpg'),
+        backgroundImage: NetworkImage(room.hostPhotoUrl),
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
+import 'package:studie/services/db_methods.dart';
 
 class EnterButton extends ConsumerWidget {
   final Room room;
@@ -11,6 +12,8 @@ class EnterButton extends ConsumerWidget {
 
   void onTap(BuildContext context, WidgetRef ref) {
     ref.read(roomProvider).changeRoom(room);
+    DBMethods().joinRoom(room.id);
+
     Navigator.of(context).push(MaterialPageRoute(
       builder: (_) => RoomScreen(room: room),
     ));

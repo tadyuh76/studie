@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:studie/models/user.dart' as model;
+import 'package:flutter/foundation.dart';
 import 'package:studie/services/db_methods.dart';
 
 class AuthMethods {
   final _auth = FirebaseAuth.instance;
+  User user = FirebaseAuth.instance.currentUser!;
 
   Future signUp({required String email, required String password}) async {
     try {
@@ -15,9 +16,9 @@ class AuthMethods {
       );
       DBMethods().addUserToDB(userCred.user!);
 
-      print('sign up successfully, uid: ${userCred.user?.uid}');
+      debugPrint('sign up successfully, uid: ${userCred.user?.uid}');
     } catch (e) {
-      print(e);
+      debugPrint("error signing up: $e");
     }
   }
 
@@ -32,18 +33,18 @@ class AuthMethods {
         email: email,
         password: password,
       );
-      print('sign in successfully, uid: ${userCred.user?.uid}');
+      debugPrint('sign in successfully, uid: ${userCred.user?.uid}');
     } catch (e) {
-      print(e);
+      debugPrint('error signing in: $e');
     }
   }
 
   Future signOut() async {
     try {
       await _auth.signOut();
-      print('signed out successfully');
+      debugPrint('signed out successfully');
     } catch (e) {
-      print(e);
+      debugPrint('error signing out: $e');
     }
   }
 }

@@ -4,12 +4,12 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 
 class NumberOfPeopleInRoom extends StatelessWidget {
-  final int numPeople;
-  final int maxPeople;
+  final int curParticipants;
+  final int maxParticipants;
   const NumberOfPeopleInRoom({
     super.key,
-    required this.numPeople,
-    required this.maxPeople,
+    required this.curParticipants,
+    required this.maxParticipants,
   });
 
   @override
@@ -33,7 +33,7 @@ class NumberOfPeopleInRoom extends StatelessWidget {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: '$numPeople',
+                    text: '$curParticipants',
                     style: const TextStyle(
                       color: kTextColor,
                       fontSize: 12,
@@ -41,7 +41,7 @@ class NumberOfPeopleInRoom extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: '/$maxPeople',
+                    text: '/$maxParticipants',
                     style: const TextStyle(
                       color: kDarkGrey,
                       fontSize: 12,

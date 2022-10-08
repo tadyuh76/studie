@@ -42,7 +42,7 @@ class App extends StatelessWidget {
         SignInScreen.routeName: ((context) => const SignInScreen()),
         SignUpScreen.routeName: ((context) => const SignUpScreen()),
         HomeScreen.routeName: ((context) => const HomeScreen()),
-        CreateRoomScreen.routeName: ((context) => CreateRoomScreen())
+        CreateRoomScreen.routeName: ((context) => const CreateRoomScreen())
       },
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),

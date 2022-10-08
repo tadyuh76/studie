@@ -3,7 +3,6 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/screens/home_screen/widgets/create_card/create_room_button.dart';
-import 'package:studie/widgets/custom_text_button.dart';
 
 class ProgressTracker extends StatelessWidget {
   const ProgressTracker({super.key});
@@ -14,7 +13,7 @@ class ProgressTracker extends StatelessWidget {
       children: [
         CircularPercentIndicator(
           radius: 60,
-          lineWidth: 8,
+          lineWidth: 10,
           backgroundColor: kWhite,
           progressColor: kPrimaryColor,
           circularStrokeCap: CircularStrokeCap.round,

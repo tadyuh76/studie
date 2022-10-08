@@ -1,30 +1,33 @@
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+
 class User {
   final String uid;
   final String username;
   final String email;
-  final String profileURL;
+  final String photoURL;
 
   User({
     required this.uid,
     required this.username,
     required this.email,
-    required this.profileURL,
+    required this.photoURL,
   });
 
   Map<String, dynamic> toJson() {
     return {
+      "uid": uid,
       "username": username,
       "email": email,
-      "profileImg": profileURL,
+      "profileImg": photoURL,
     };
   }
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  factory User.fromFirebaseUser(auth.User user) {
     return User(
-      uid: json['uid'],
-      username: json['username'],
-      email: json['email'],
-      profileURL: json['profileURL'],
+      uid: user.uid,
+      username: user.displayName ?? '',
+      email: user.email ?? '',
+      photoURL: user.photoURL ?? '',
     );
   }
 }

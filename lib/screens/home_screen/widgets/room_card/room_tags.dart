@@ -3,7 +3,7 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 
 class RoomTags extends StatelessWidget {
-  final List<String> tags;
+  final List<dynamic> tags;
   const RoomTags({super.key, required this.tags});
 
   @override

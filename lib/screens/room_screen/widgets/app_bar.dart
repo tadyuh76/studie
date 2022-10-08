@@ -31,10 +31,8 @@ class RoomAppBar extends StatelessWidget {
           ),
           const SizedBox(width: kDefaultPadding),
           Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: kSmallPadding,
-              horizontal: kDefaultPadding,
-            ),
+            height: 30,
+            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
             decoration: BoxDecoration(
               color: kPrimaryColor,
               borderRadius: BorderRadius.circular(10),
@@ -54,7 +52,7 @@ class RoomAppBar extends StatelessWidget {
                     style: TextStyle(
                       color: kWhite,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 14,
                     ),
                   ),
                 ],

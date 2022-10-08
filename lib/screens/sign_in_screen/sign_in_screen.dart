@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:studie/constants/breakpoints.dart';
@@ -21,9 +22,9 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void onSubmit(BuildContext context, [bool mounted = true]) async {
+  void onSubmit(BuildContext context) async {
     setState(() => _isSigningIn = true);
-    await AuthMethods().signInWithEmailAndPassworrd(
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     );
