@@ -8,7 +8,7 @@ import 'package:studie/services/auth_methods.dart';
 class DBMethods {
   final _db = FirebaseFirestore.instance;
 
-  void addUserToDB(User user) async {
+  Future<void> addUserToDB(User user) async {
     try {
       await _db.collection('users').doc(user.uid).set({
         "uid": user.uid,
@@ -27,7 +27,7 @@ class DBMethods {
     return _db.collection('rooms').snapshots();
   }
 
-  Future createRoom(Room room) async {
+  Future<void> createRoom(Room room) async {
     try {
       final ref = await _db.collection('rooms').add(room.toJson());
       room.id = ref.id;
@@ -38,7 +38,7 @@ class DBMethods {
     }
   }
 
-  Future joinRoom(
+  Future<void> joinRoom(
     String roomId,
   ) async {
     try {
@@ -54,7 +54,7 @@ class DBMethods {
     }
   }
 
-  Future leaveRoom(String roomId) async {
+  Future<void> leaveRoom(String roomId) async {
     try {
       final user = AuthMethods().user;
       final currentRoomIn = _db.collection('rooms').doc(roomId);

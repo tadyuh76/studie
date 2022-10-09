@@ -85,9 +85,11 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
         type: StepperType.horizontal,
         onStepContinue: () {
           if (_currentStep < 2) setState(() => _currentStep++);
+          FocusManager.instance.primaryFocus?.unfocus();
         },
         onStepCancel: () {
           if (_currentStep > 0) setState(() => _currentStep--);
+          FocusManager.instance.primaryFocus?.unfocus();
         },
         controlsBuilder: (context, details) => Padding(
           padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),

@@ -8,13 +8,15 @@ class CustomTextField extends StatefulWidget {
   final TextInputType inputType;
   final bool toggleVisible;
   final IconData iconData;
+  final VoidCallback? onEnter;
   const CustomTextField({
     super.key,
     required this.hintText,
     required this.controller,
     required this.inputType,
-    this.toggleVisible = false,
     required this.iconData,
+    this.toggleVisible = false,
+    this.onEnter,
   });
 
   @override
@@ -27,6 +29,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onFieldSubmitted:
+          widget.onEnter != null ? (val) => widget.onEnter?.call() : (val) {},
       controller: widget.controller,
       obscureText: widget.toggleVisible && !_passwordVisible,
       autocorrect: false,

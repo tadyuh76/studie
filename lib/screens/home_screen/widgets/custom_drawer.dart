@@ -1,14 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
-import 'package:studie/services/auth_methods.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
 
-  void onLogOut(BuildContext context) async {
-    await AuthMethods().signOut();
+  void onLogOut(BuildContext context) {
+    FirebaseAuth.instance.signOut();
   }
 
   @override
