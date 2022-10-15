@@ -9,12 +9,11 @@ import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/create_room_screen/widgets/checkbox_option.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/services/db_methods.dart';
+import 'package:studie/widgets/auth_text_button.dart';
 import 'package:studie/widgets/form/form_title.dart';
 import 'package:studie/widgets/form/number_input.dart';
 import 'package:studie/widgets/form/pomodoro_setting.dart';
 import 'package:studie/widgets/form/text_input.dart';
-import 'package:studie/screens/home_screen/home_screen.dart';
-import 'package:studie/widgets/custom_text_button.dart';
 
 class CreateRoomScreen extends StatefulWidget {
   static const routeName = 'create';
@@ -319,8 +318,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
           children: [
             IconButton(
               splashRadius: 25,
-              onPressed: () => Navigator.of(context)
-                  .pushReplacementNamed(HomeScreen.routeName),
+              onPressed: Navigator.of(context).pop,
               icon: const Icon(
                 Icons.arrow_back,
                 color: kBlack,

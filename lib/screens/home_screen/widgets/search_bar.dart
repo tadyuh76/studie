@@ -5,12 +5,14 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 
 class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
+  final double height;
+  final String hintText;
+  const SearchBar({super.key, required this.height, required this.hintText});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
+      height: height,
       margin: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       decoration: BoxDecoration(
@@ -20,10 +22,10 @@ class SearchBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Tìm phòng học',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+          Text(
+            hintText,
+            style: const TextStyle(
+              // fontWeight: FontWeight.bold,
               color: kDarkGrey,
               fontSize: 14,
             ),

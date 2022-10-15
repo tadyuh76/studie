@@ -26,7 +26,6 @@ class RoomTags extends StatelessWidget {
                 child: Text(
                   tag,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
                     color: kDarkGrey,
                     fontSize: 12,
                   ),

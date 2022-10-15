@@ -48,7 +48,6 @@ class RoomCard extends StatelessWidget {
                   maxLines: 3,
                   style: const TextStyle(
                     color: kTextColor,
-                    fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),

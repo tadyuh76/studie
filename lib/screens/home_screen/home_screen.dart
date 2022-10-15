@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
-import 'package:studie/screens/home_screen/widgets/create_card/create_card.dart';
+import 'package:studie/providers/navigator_index_provider.dart';
+import 'package:studie/screens/alchemy_screen/alchemy_screen.dart';
 import 'package:studie/screens/home_screen/widgets/custom_drawer.dart';
+import 'package:studie/screens/home_screen/widgets/progress_tracker.dart';
 import 'package:studie/screens/home_screen/widgets/rooms_section.dart';
 import 'package:studie/screens/home_screen/widgets/search_bar.dart';
+import 'package:studie/widgets/bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -78,21 +81,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             },
             child: Scaffold(
               appBar: renderAppBar(context),
-              bottomNavigationBar: renderBottomNavigationBar(),
-              body: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    SizedBox(height: kMediumPadding),
-                    SearchBar(),
-                    SizedBox(height: kDefaultPadding),
-                    CreateCard(),
-                    SizedBox(height: kDefaultPadding),
-                    RoomsSection(),
-                  ],
-                ),
-              ),
+              bottomNavigationBar: const BottomNav(),
+              body: const _MainBody(),
             ),
           ),
         ),
@@ -140,78 +130,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
+}
 
-  Widget renderBottomNavigationBar() {
-    return SizedBox(
-      height: 60,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: kWhite,
-          border: Border.fromBorderSide(
-            BorderSide(color: kLightGrey, width: 1),
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/home.svg',
-                    width: 32,
-                    height: 32,
-                    color: kPrimaryColor,
-                  ),
-                  const Text(
-                    'Trang chủ',
-                    style: TextStyle(
-                      color: kPrimaryColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+class _MainBody extends ConsumerWidget {
+  const _MainBody({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(navigatorIndexProvider);
+
+    return currentIndex == 0
+        ? SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                SizedBox(height: kMediumPadding),
+                SearchBar(height: 50, hintText: 'Tìm phòng học'),
+                SizedBox(height: kDefaultPadding),
+                ProgressTracker(),
+                SizedBox(height: kDefaultPadding),
+                RoomsSection(),
+              ],
             ),
-            Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: kPrimaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: SvgPicture.asset(
-                  'assets/icons/plus.svg',
-                  width: 24,
-                  height: 24,
-                  color: kWhite,
-                )),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/alchemy.svg',
-                    width: 32,
-                    height: 32,
-                    color: kDarkGrey,
-                  ),
-                  const Text(
-                    'Phòng thí nghiệm',
-                    style: TextStyle(
-                      color: kDarkGrey,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+          )
+        : const AlchemyScreen();
   }
 }
