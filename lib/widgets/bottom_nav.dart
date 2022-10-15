@@ -26,6 +26,7 @@ class BottomNav extends ConsumerWidget {
           children: [
             Expanded(
               child: Material(
+                color: Colors.transparent,
                 child: InkWell(
                   onTap: () =>
                       ref.read(navigatorIndexProvider.notifier).state = 0,
@@ -76,6 +77,7 @@ class BottomNav extends ConsumerWidget {
             ),
             Expanded(
               child: Material(
+                color: Colors.transparent,
                 child: InkWell(
                   onTap: () =>
                       ref.read(navigatorIndexProvider.notifier).state = 1,

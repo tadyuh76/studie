@@ -37,10 +37,6 @@ class _RoomScreenState extends State<RoomScreen> {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
     );
-    setState(() {});
-  }
-
-  void onPageChanged(int index) {
     _currentTabIndex = index;
     setState(() {});
   }
@@ -115,7 +111,7 @@ class _RoomScreenState extends State<RoomScreen> {
   Expanded renderTabView() {
     return Expanded(
       child: PageView(
-        onPageChanged: onPageChanged,
+        physics: const NeverScrollableScrollPhysics(),
         controller: _pageController,
         children: [
           for (int i = 0; i < tabs.length; i++) tabs.values.elementAt(i),

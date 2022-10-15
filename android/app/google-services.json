@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "576191297874",
+    "project_id": "studie-a9c68",
+    "storage_bucket": "studie-a9c68.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576191297874:android:10bfe023fb9eb6ed0ba28b",
+        "android_client_info": {
+          "package_name": "com.example.studie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "576191297874-pku9c30gqndl6vjf9m8nocb4m2tki1vq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.studie",
+            "certificate_hash": "ab9ac5e6a6d6f4f446760c6310618d68c587a036"
+          }
+        },
+        {
+          "client_id": "576191297874-k23lrrpk3s6ht1vmurfbgk1ocmhmjbb4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxjDJlxnhi8PRlp91xSsEZhzmU80Tvs3w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576191297874-k23lrrpk3s6ht1vmurfbgk1ocmhmjbb4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "576191297874-pg40ptg0p0gsirivppfuvo8k7v57ka9r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.studie"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

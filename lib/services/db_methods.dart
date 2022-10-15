@@ -42,7 +42,8 @@ class DBMethods {
     String roomId,
   ) async {
     try {
-      final user = model.User.fromFirebaseUser(AuthMethods().user);
+      final user =
+          model.User.fromFirebaseUser(AuthMethods(FirebaseAuth.instance).user);
       final roomRef = _db.collection('rooms').doc(roomId);
 
       roomRef.collection('participants').doc(user.uid).set(user.toJson());
@@ -56,7 +57,7 @@ class DBMethods {
 
   Future<void> leaveRoom(String roomId) async {
     try {
-      final user = AuthMethods().user;
+      final user = AuthMethods(FirebaseAuth.instance).user;
       final currentRoomIn = _db.collection('rooms').doc(roomId);
       currentRoomIn.collection('participants').doc(user.uid).delete();
 

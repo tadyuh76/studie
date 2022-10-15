@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/screens/sign_in_screen/widgets/login_button.dart';
@@ -55,6 +56,29 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    try {
+      final googleUser = await GoogleSignIn().signIn();
+      final googleAuth = await googleUser?.authentication;
+      if (googleAuth?.accessToken != null && googleAuth?.idToken != null) {
+        // creating new credential
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken,
+          idToken: googleAuth?.idToken,
+        );
+        final userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        if (userCredential.user != null) {
+          if (userCredential.additionalUserInfo!.isNewUser) {
+            await DBMethods().addUserToDB(userCredential.user!);
+          }
+        }
+      }
+    } catch (e) {
+      print('error signing in with google: $e');
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -68,124 +92,126 @@ class _SignInScreenState extends State<SignInScreen> {
     final isLongDevice = size.height >= 2 * size.width;
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Image.asset(
-                  'assets/images/login.png',
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 320,
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: Image.asset(
+                'assets/images/login.png',
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 320,
+              ),
+            ),
+            const Positioned(
+              top: 100,
+              left: 0,
+              right: 0,
+              child: Text(
+                'Studie!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: kWhite,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32,
                 ),
               ),
-              const Positioned(
-                top: 100,
-                left: 0,
-                right: 0,
-                child: Text(
-                  'Studie!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: kWhite,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 32,
+            ),
+            Container(
+              height: size.height,
+              padding: const EdgeInsets.all(kDefaultPadding),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Đăng nhập',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: kDarkGrey,
+                      fontSize: 24,
+                    ),
                   ),
-                ),
-              ),
-              Container(
-                height: size.height,
-                padding: const EdgeInsets.all(kDefaultPadding),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Đăng nhập',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: kDarkGrey,
-                        fontSize: 24,
+                  const SizedBox(height: kDefaultPadding),
+                  CustomTextField(
+                    iconData: Icons.email,
+                    hintText: 'Email',
+                    controller: _emailController,
+                    inputType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: kMediumPadding),
+                  CustomTextField(
+                    iconData: Icons.lock,
+                    hintText: 'Mật khẩu',
+                    controller: _passwordController,
+                    inputType: TextInputType.text,
+                    toggleVisible: true,
+                    onEnter: onSubmit,
+                  ),
+                  const SizedBox(height: kDefaultPadding),
+                  CustomTextButton(
+                    text: 'Đăng nhập',
+                    onTap: onSubmit,
+                    primary: true,
+                    loading: _isSigningIn,
+                    disabled: _isSigningIn,
+                    large: true,
+                  ),
+                  const SizedBox(height: kDefaultPadding),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Chưa có tài khoản? ',
+                        style: TextStyle(
+                          color: kDarkGrey,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: kDefaultPadding),
-                    CustomTextField(
-                      iconData: Icons.email,
-                      hintText: 'Email',
-                      controller: _emailController,
-                      inputType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: kMediumPadding),
-                    CustomTextField(
-                      iconData: Icons.lock,
-                      hintText: 'Mật khẩu',
-                      controller: _passwordController,
-                      inputType: TextInputType.text,
-                      toggleVisible: true,
-                      onEnter: onSubmit,
-                    ),
-                    const SizedBox(height: kDefaultPadding),
-                    CustomTextButton(
-                      text: 'Đăng nhập',
-                      onTap: onSubmit,
-                      primary: true,
-                      loading: _isSigningIn,
-                      disabled: _isSigningIn,
-                      large: true,
-                    ),
-                    const SizedBox(height: kDefaultPadding),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Chưa có tài khoản? ',
+                      GestureDetector(
+                        onTap: onSignUp,
+                        child: const Text(
+                          'Đăng kí',
                           style: TextStyle(
-                            color: kDarkGrey,
+                            color: kPrimaryColor,
                             fontSize: 12,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: onSignUp,
-                          child: const Text(
-                            'Đăng kí',
-                            style: TextStyle(
-                              color: kPrimaryColor,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: kMediumPadding),
-                    Row(children: const [
-                      Expanded(child: Divider()),
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: kMediumPadding),
-                        child: Text(
-                          "Hoặc",
-                          style: TextStyle(fontSize: 12, color: kDarkGrey),
-                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: kMediumPadding),
+                  Row(children: const [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: kMediumPadding),
+                      child: Text(
+                        "Hoặc",
+                        style: TextStyle(fontSize: 12, color: kDarkGrey),
                       ),
-                      Expanded(child: Divider()),
-                    ]),
-                    const SizedBox(height: kMediumPadding),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        LoginButton(iconName: "facebook", onTap: () {}),
-                        const SizedBox(width: kDefaultPadding),
-                        LoginButton(iconName: 'google', onTap: () {}),
-                      ],
                     ),
-                    if (isLongDevice) const SizedBox(height: 100),
-                  ],
-                ),
+                    Expanded(child: Divider()),
+                  ]),
+                  const SizedBox(height: kMediumPadding),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      LoginButton(iconName: "facebook", onTap: () {}),
+                      const SizedBox(width: kDefaultPadding),
+                      LoginButton(
+                        iconName: 'google',
+                        onTap: () {
+                          signInWithGoogle();
+                        },
+                      ),
+                    ],
+                  ),
+                  if (isLongDevice) const SizedBox(height: 100),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
