@@ -129,7 +129,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     'Đăng nhập',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: kDarkGrey,
+                      color: kBlack,
                       fontSize: 24,
                     ),
                   ),

@@ -76,7 +76,7 @@ class _RoomScreenState extends State<RoomScreen> {
                       onTap: () {},
                       child: Center(
                         child: SvgPicture.asset(
-                          'assets/icons/popup_menu.svg',
+                          'assets/icons/music.svg',
                           color: kTextColor,
                           width: 32,
                           height: 32,
