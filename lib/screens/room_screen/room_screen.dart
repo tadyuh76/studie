@@ -12,11 +12,11 @@ import 'package:studie/screens/room_screen/widgets/tab_pages/file_view.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/whiteboard.dart';
 import 'package:studie/services/db_methods.dart';
 
-const Map<String, Widget> tabs = {
-  "camera": CameraViewPage(),
-  "image": FileViewPage(),
+final Map<String, Widget> tabs = {
+  "camera": const CameraViewPage(),
+  "image": const FileViewPage(),
   "chats": ChatsPage(),
-  "whiteboard": WhiteboardPage(),
+  "notes": const NotesPage(),
 };
 
 class RoomScreen extends StatefulWidget {

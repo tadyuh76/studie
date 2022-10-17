@@ -12,9 +12,7 @@ import 'package:studie/screens/home_screen/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const ProviderScope(child: App()));
 }
 
@@ -58,6 +56,21 @@ class App extends StatelessWidget {
           return const SignInScreen();
         },
       ),
+      builder: (context, child) => _Unfocus(child: child!),
+    );
+  }
+}
+
+class _Unfocus extends StatelessWidget {
+  final Widget child;
+  const _Unfocus({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: FocusManager.instance.primaryFocus?.unfocus,
+      behavior: HitTestBehavior.opaque,
+      child: child,
     );
   }
 }

@@ -4,8 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:studie/services/db_methods.dart';
 
 class AuthMethods {
-  final FirebaseAuth _auth;
-  AuthMethods(this._auth);
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User user = FirebaseAuth.instance.currentUser!;
 

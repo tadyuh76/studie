@@ -1,12 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:studie/models/message.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/models/user.dart' as model;
 import 'package:studie/services/auth_methods.dart';
 
 class DBMethods {
   final _db = FirebaseFirestore.instance;
+
+  Stream<QuerySnapshot> getMessages(String roomId) {
+    final snapshots = _db
+        .collection("rooms")
+        .doc(roomId)
+        .collection('messages')
+        .orderBy("createdAt", descending: true)
+        .snapshots();
+
+    return snapshots;
+  }
+
+  Future<void> sendMessage(String message, String roomId) async {
+    try {
+      final curUser = AuthMethods().user;
+      final messageObj = Message(
+        id: '',
+        senderId: curUser.uid,
+        senderName: curUser.displayName ?? "Ẩn danh",
+        senderPhotoURL: curUser.photoURL ?? "",
+        text: message,
+        createdAt: DateTime.now().toString(),
+      );
+
+      final docRef = await _db
+          .collection('rooms')
+          .doc(roomId)
+          .collection('messages')
+          .add(messageObj.toJson());
+      docRef.update({"id": docRef.id});
+      print('sent message');
+    } catch (e) {
+      print('error sending message: $e');
+    }
+  }
 
   Future<void> addUserToDB(User user) async {
     try {
@@ -32,6 +68,7 @@ class DBMethods {
       final ref = await _db.collection('rooms').add(room.toJson());
       room.id = ref.id;
       ref.update({"id": ref.id});
+
       debugPrint('room created!');
     } catch (e) {
       debugPrint('error creating room: $e');
@@ -42,8 +79,7 @@ class DBMethods {
     String roomId,
   ) async {
     try {
-      final user =
-          model.User.fromFirebaseUser(AuthMethods(FirebaseAuth.instance).user);
+      final user = model.User.fromFirebaseUser(AuthMethods().user);
       final roomRef = _db.collection('rooms').doc(roomId);
 
       roomRef.collection('participants').doc(user.uid).set(user.toJson());
@@ -57,7 +93,7 @@ class DBMethods {
 
   Future<void> leaveRoom(String roomId) async {
     try {
-      final user = AuthMethods(FirebaseAuth.instance).user;
+      final user = AuthMethods().user;
       final currentRoomIn = _db.collection('rooms').doc(roomId);
       currentRoomIn.collection('participants').doc(user.uid).delete();
 

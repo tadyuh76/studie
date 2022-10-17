@@ -14,4 +14,26 @@ class Message {
     required this.text,
     required this.createdAt,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "text": text,
+      "senderId": senderId,
+      "senderName": senderName,
+      "senderPhotoURL": senderPhotoURL,
+      "createdAt": createdAt,
+    };
+  }
+
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
+      id: json["id"],
+      senderId: json["senderId"],
+      senderName: json["senderName"],
+      senderPhotoURL: json["senderPhotoURL"],
+      text: json["text"],
+      createdAt: json["createdAt"],
+    );
+  }
 }

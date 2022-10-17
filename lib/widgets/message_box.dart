@@ -1,35 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/message.dart';
+import 'package:studie/services/auth_methods.dart';
 
-class MessageBox extends StatelessWidget {
+class MessageBox extends ConsumerWidget {
   final Message message;
   const MessageBox({super.key, required this.message});
 
-  bool get isCurUser => message.senderId == 'hehe';
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userId = AuthMethods().user.uid;
+    final isSender = message.senderId == userId;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final messageMaxWidth = screenWidth * 0.7;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kSmallPadding),
-      child: isCurUser
+      child: isSender
           ? Align(
               alignment: Alignment.centerRight,
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: kPrimaryColor,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: messageMaxWidth),
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    color: kPrimaryColor,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(kMediumPadding),
-                  child: Text(
-                    message.text,
-                    style: const TextStyle(
-                      color: kWhite,
-                      fontSize: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.all(kMediumPadding),
+                    child: Text(
+                      message.text,
+                      style: const TextStyle(
+                        color: kWhite,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -56,19 +64,22 @@ class MessageBox extends StatelessWidget {
                         style: const TextStyle(fontSize: 12, color: kDarkGrey),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(kMediumPadding),
-                      decoration: const BoxDecoration(
-                        color: kLightGrey,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(50),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: messageMaxWidth),
+                      child: Container(
+                        padding: const EdgeInsets.all(kMediumPadding),
+                        decoration: const BoxDecoration(
+                          color: kLightGrey,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        'Hello world',
-                        style: TextStyle(
-                          color: kBlack,
-                          fontSize: 14,
+                        child: Text(
+                          message.text,
+                          style: const TextStyle(
+                            color: kBlack,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),

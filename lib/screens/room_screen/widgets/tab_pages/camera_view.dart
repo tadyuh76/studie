@@ -5,6 +5,8 @@ class CameraViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('CameraViewPage'));
+    return const Center(
+      child: Text('videoo calling...'),
+    );
   }
 }

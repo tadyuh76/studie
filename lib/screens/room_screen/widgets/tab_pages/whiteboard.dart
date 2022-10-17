@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class WhiteboardPage extends StatelessWidget {
-  const WhiteboardPage({super.key});
+class NotesPage extends StatelessWidget {
+  const NotesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
