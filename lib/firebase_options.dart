@@ -66,8 +66,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '576191297874',
     projectId: 'studie-a9c68',
     storageBucket: 'studie-a9c68.appspot.com',
-    iosClientId: '576191297874-pg40ptg0p0gsirivppfuvo8k7v57ka9r.apps.googleusercontent.com',
-    iosBundleId: 'com.example.studie',
+    iosClientId:
+        '576191297874-pg40ptg0p0gsirivppfuvo8k7v57ka9r.apps.googleusercontent.com',
+    iosBundleId: 'com.tadyuh.studie',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -76,7 +77,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '576191297874',
     projectId: 'studie-a9c68',
     storageBucket: 'studie-a9c68.appspot.com',
-    iosClientId: '576191297874-pg40ptg0p0gsirivppfuvo8k7v57ka9r.apps.googleusercontent.com',
-    iosBundleId: 'com.example.studie',
+    iosClientId:
+        '576191297874-pg40ptg0p0gsirivppfuvo8k7v57ka9r.apps.googleusercontent.com',
+    iosBundleId: 'com.tadyuh.studie',
   );
 }

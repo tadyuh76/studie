@@ -59,20 +59,19 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> signInWithGoogle() async {
     try {
       final googleUser = await GoogleSignIn().signIn();
-      final googleAuth = await googleUser!.authentication;
-      if (googleAuth.accessToken != null && googleAuth.idToken != null) {
-        // creating new credential
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        final userCredential =
-            await FirebaseAuth.instance.signInWithCredential(credential);
-        print('signed in');
-        if (userCredential.user != null) {
-          if (userCredential.additionalUserInfo!.isNewUser) {
-            await DBMethods().addUserToDB(userCredential.user!);
-          }
+      if (googleUser == null) return;
+
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      if (userCredential.user != null) {
+        print(userCredential.additionalUserInfo);
+        if (userCredential.additionalUserInfo!.isNewUser) {
+          await DBMethods().addUserToDB(userCredential.user!);
         }
       }
     } catch (e) {

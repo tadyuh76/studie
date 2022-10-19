@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:576191297874:android:10bfe023fb9eb6ed0ba28b",
+        "mobilesdk_app_id": "1:576191297874:android:6a96dffd71bd3c560ba28b",
         "android_client_info": {
-          "package_name": "com.example.studie"
+          "package_name": "com.tadyuh.studie"
         }
       },
       "oauth_client": [
         {
-          "client_id": "576191297874-pku9c30gqndl6vjf9m8nocb4m2tki1vq.apps.googleusercontent.com",
+          "client_id": "576191297874-r7n7s9t1isdk0dkrqtndk3ctv4068in5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.studie",
+            "package_name": "com.tadyuh.studie",
             "certificate_hash": "ab9ac5e6a6d6f4f446760c6310618d68c587a036"
           }
         },

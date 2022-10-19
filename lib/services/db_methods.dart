@@ -79,7 +79,7 @@ class DBMethods {
     String roomId,
   ) async {
     try {
-      final user = model.User.fromFirebaseUser(AuthMethods().user);
+      final user = model.UserModel.fromFirebaseUser(AuthMethods().user);
       final roomRef = _db.collection('rooms').doc(roomId);
 
       roomRef.collection('participants').doc(user.uid).set(user.toJson());
