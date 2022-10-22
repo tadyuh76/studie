@@ -5,6 +5,7 @@ import 'package:studie/models/room.dart';
 import 'package:studie/screens/home_screen/widgets/room_card/enter_button.dart';
 import 'package:studie/screens/home_screen/widgets/room_card/number_of_people.dart';
 import 'package:studie/screens/home_screen/widgets/room_card/room_tags.dart';
+import 'package:studie/widgets/avatar.dart';
 
 class RoomCard extends StatelessWidget {
   final Room room;
@@ -65,10 +66,7 @@ class RoomCard extends StatelessWidget {
     return Positioned(
       bottom: -20,
       left: 20,
-      child: CircleAvatar(
-        radius: 20,
-        backgroundImage: NetworkImage(room.hostPhotoUrl),
-      ),
+      child: Avatar(radius: 20, photoURL: room.hostPhotoUrl),
     );
   }
 

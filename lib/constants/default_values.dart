@@ -1,0 +1,1 @@
+const kDefaultName = "Ẩn danh";

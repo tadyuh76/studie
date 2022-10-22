@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/firebase_options.dart';
 import 'package:studie/screens/create_room_screen/create_room_screen.dart';
+import 'package:studie/screens/root_screen/root_screen.dart';
 import 'package:studie/screens/sign_in_screen/sign_in_screen.dart';
 import 'package:studie/screens/sign_up_screen/sign_up_screen.dart';
 import 'package:studie/screens/home_screen/home_screen.dart';
@@ -46,7 +47,7 @@ class App extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const HomeScreen();
+            return const RootScreen();
           } else if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));
           } else if (snapshot.connectionState == ConnectionState.waiting) {

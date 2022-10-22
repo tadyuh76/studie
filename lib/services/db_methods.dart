@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:studie/constants/default_values.dart';
 import 'package:studie/models/message.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/models/user.dart' as model;
@@ -26,7 +27,7 @@ class DBMethods {
       final messageObj = Message(
         id: '',
         senderId: curUser.uid,
-        senderName: curUser.displayName ?? "Ẩn danh",
+        senderName: curUser.displayName ?? kDefaultName,
         senderPhotoURL: curUser.photoURL ?? "",
         text: message,
         createdAt: DateTime.now().toString(),
@@ -38,9 +39,8 @@ class DBMethods {
           .collection('messages')
           .add(messageObj.toJson());
       docRef.update({"id": docRef.id});
-      print('sent message');
     } catch (e) {
-      print('error sending message: $e');
+      debugPrint('error sending message: $e');
     }
   }
 
@@ -48,9 +48,9 @@ class DBMethods {
     try {
       await _db.collection('users').doc(user.uid).set({
         "uid": user.uid,
-        "username": user.displayName,
-        "photoURL": user.photoURL,
-        "email": user.email,
+        "username": user.displayName ?? kDefaultName,
+        "photoURL": user.photoURL ?? "",
+        "email": user.email ?? "",
       });
 
       debugPrint('added user to db');

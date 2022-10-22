@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/models/room.dart';
 
 class RoomNotifier extends ChangeNotifier {
-  Room? room;
+  Room? _room;
+
+  Room get room => _room!;
 
   void changeRoom(Room newRoom) {
-    room = newRoom;
+    _room = newRoom;
     notifyListeners();
   }
 
   void exitRoom() {
-    room = null;
+    _room = null;
     notifyListeners();
   }
 }

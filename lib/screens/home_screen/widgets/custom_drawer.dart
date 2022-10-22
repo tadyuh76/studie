@@ -1,19 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
+import 'package:studie/models/user.dart';
+import 'package:studie/providers/user_provider.dart';
+import 'package:studie/widgets/avatar.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends ConsumerWidget {
   const CustomDrawer({super.key});
 
   void onLogOut(BuildContext context) {
     FirebaseAuth.instance.signOut();
+    GoogleSignIn().signOut();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
+    final user = ref.watch(userProvider).user;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -25,7 +32,7 @@ class CustomDrawer extends StatelessWidget {
               padding: const EdgeInsets.all(kDefaultPadding),
               child: Column(
                 children: [
-                  renderUserInfo(),
+                  renderUserInfo(user),
                   const SizedBox(height: kDefaultPadding),
                   TabItem(
                     text: 'Trang chủ',
@@ -57,22 +64,19 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
-  Widget renderUserInfo() {
+  Widget renderUserInfo(UserModel user) {
     return Row(
       children: [
-        const CircleAvatar(
-          backgroundImage: AssetImage('assets/images/avatar.jpg'),
-          radius: 24,
-        ),
+        Avatar(photoURL: user.photoURL, radius: 24),
         const SizedBox(width: kDefaultPadding),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
-                'Đạt Huy',
+                user.username,
                 maxLines: 1,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: kTextColor,
                   fontSize: 14,
@@ -80,9 +84,9 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
               Text(
-                'tadyuh76@gmail.com',
+                user.email,
                 maxLines: 1,
-                style: TextStyle(
+                style: const TextStyle(
                   color: kDarkGrey,
                   fontSize: 14,
                   overflow: TextOverflow.clip,

@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/message.dart';
-import 'package:studie/services/auth_methods.dart';
+import 'package:studie/providers/user_provider.dart';
+import 'package:studie/widgets/avatar.dart';
 
 class MessageBox extends ConsumerWidget {
   final Message message;
@@ -11,8 +12,8 @@ class MessageBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = AuthMethods().user.uid;
-    final isSender = message.senderId == userId;
+    final user = ref.watch(userProvider).user;
+    final isSender = message.senderId == user.uid;
     final screenWidth = MediaQuery.of(context).size.width;
     final messageMaxWidth = screenWidth * 0.7;
 
@@ -46,17 +47,14 @@ class MessageBox extends ConsumerWidget {
           : Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                const CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/avatar.jpg'),
-                  radius: 14,
-                ),
+                Avatar(photoURL: message.senderPhotoURL, radius: 14),
                 const SizedBox(width: kMediumPadding),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(
-                        left: kMediumPadding,
+                        left: kSmallPadding,
                         bottom: kSmallPadding,
                       ),
                       child: Text(

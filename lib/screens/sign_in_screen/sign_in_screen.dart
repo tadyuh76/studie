@@ -17,7 +17,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  bool _isSigningIn = false;
+  bool _loading = false;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,7 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
       return;
     }
 
-    setState(() => _isSigningIn = true);
+    setState(() => _loading = true);
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
@@ -36,7 +36,7 @@ class _SignInScreenState extends State<SignInScreen> {
     } catch (e) {
       print('error signing in: $e');
     }
-    setState(() => _isSigningIn = false);
+    setState(() => _loading = false);
   }
 
   Future<void> onSignUp() async {
@@ -62,6 +62,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (googleUser == null) return;
 
       final googleAuth = await googleUser.authentication;
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -69,7 +70,6 @@ class _SignInScreenState extends State<SignInScreen> {
       final userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       if (userCredential.user != null) {
-        print(userCredential.additionalUserInfo);
         if (userCredential.additionalUserInfo!.isNewUser) {
           await DBMethods().addUserToDB(userCredential.user!);
         }
@@ -154,8 +154,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     text: 'Đăng nhập',
                     onTap: onSubmit,
                     primary: true,
-                    loading: _isSigningIn,
-                    disabled: _isSigningIn,
+                    loading: _loading,
+                    disabled: _loading,
                     large: true,
                   ),
                   const SizedBox(height: kDefaultPadding),

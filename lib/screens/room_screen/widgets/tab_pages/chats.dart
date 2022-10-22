@@ -8,89 +8,6 @@ import 'package:studie/providers/room_provider.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/widgets/message_box.dart';
 
-final messages = [
-  Message(
-    id: '0',
-    senderId: 'ehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '1',
-    senderId: 'ehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '2',
-    senderId: 'hehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '3',
-    senderId: 'ehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '3',
-    senderId: 'ehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '3',
-    senderId: 'ehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '3',
-    senderId: 'hehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '3',
-    senderId: 'hehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '3',
-    senderId: 'ehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-  Message(
-    id: '3',
-    senderId: 'ehe',
-    senderName: 'Huy',
-    senderPhotoURL: 'senderPhotoURL',
-    text: 'Hello World',
-    createdAt: DateTime.now().toString(),
-  ),
-];
-
 class ChatsPage extends ConsumerWidget {
   ChatsPage({super.key});
 
@@ -105,7 +22,7 @@ class ChatsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = ref.read(roomProvider).room!.id;
+    final roomId = ref.read(roomProvider).room.id;
 
     return Scaffold(
       body: Padding(
@@ -152,6 +69,7 @@ class ChatsPage extends ConsumerWidget {
                 height: 40,
                 child: TextField(
                   controller: _messageController,
+                  onSubmitted: (_) => sendMessage(roomId),
                   decoration: InputDecoration(
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: kDefaultPadding),

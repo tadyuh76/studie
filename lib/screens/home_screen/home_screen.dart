@@ -9,6 +9,7 @@ import 'package:studie/screens/home_screen/widgets/custom_drawer.dart';
 import 'package:studie/screens/home_screen/widgets/progress_tracker.dart';
 import 'package:studie/screens/home_screen/widgets/rooms_section.dart';
 import 'package:studie/screens/home_screen/widgets/search_bar.dart';
+import 'package:studie/widgets/avatar.dart';
 import 'package:studie/widgets/bottom_nav.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -22,7 +23,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 class HomeScreenState extends ConsumerState<HomeScreen>
     with TickerProviderStateMixin {
   late AnimationController _menuController;
-  bool loading = true;
   bool isMenuOpen = false;
   double x = 0;
   double y = 0;
@@ -34,11 +34,11 @@ class HomeScreenState extends ConsumerState<HomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    // getData();
+  }
 
-    ref
-        .read(userProvider)
-        .getUser()
-        .then((_) => setState(() => loading = false));
+  getData() async {
+    await ref.read(userProvider).updateUser();
   }
 
   @override
@@ -56,7 +56,7 @@ class HomeScreenState extends ConsumerState<HomeScreen>
       } else {
         _menuController.forward();
         x = size.width * 0.7;
-        y = size.height * 0.1;
+        y = size.height * 0.15;
       }
       isMenuOpen = !isMenuOpen;
     });
@@ -64,45 +64,43 @@ class HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return loading
-        ? const Center(child: CircularProgressIndicator())
-        : Stack(
-            children: [
-              const CustomDrawer(),
-              AnimatedContainer(
-                curve: Curves.easeInCubic,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  borderRadius: isMenuOpen
-                      ? BorderRadius.circular(kDefaultPadding)
-                      : null,
-                  boxShadow: isMenuOpen
-                      ? [const BoxShadow(blurRadius: 32, color: kShadow)]
-                      : null,
-                ),
-                transform: Matrix4.translationValues(x, y, 0)
-                  ..scale(isMenuOpen ? 0.8 : 1.00),
-                duration: const Duration(milliseconds: 300),
-                child: GestureDetector(
-                  onHorizontalDragStart: (details) {
-                    if (isMenuOpen) onMenuTap(MediaQuery.of(context).size);
-                  },
-                  onTap: () {
-                    if (isMenuOpen) onMenuTap(MediaQuery.of(context).size);
-                  },
-                  child: Scaffold(
-                    appBar: renderAppBar(context),
-                    bottomNavigationBar: const BottomNav(),
-                    body: const _MainBody(),
-                  ),
-                ),
-              ),
-            ],
-          );
+    return Stack(
+      children: [
+        const CustomDrawer(),
+        AnimatedContainer(
+          curve: Curves.easeInCubic,
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            borderRadius:
+                isMenuOpen ? BorderRadius.circular(kDefaultPadding) : null,
+            boxShadow: isMenuOpen
+                ? [const BoxShadow(blurRadius: 32, color: kShadow)]
+                : null,
+          ),
+          transform: Matrix4.translationValues(x, y, 0)
+            ..scale(isMenuOpen ? 0.8 : 1.00),
+          duration: const Duration(milliseconds: 300),
+          child: GestureDetector(
+            onHorizontalDragStart: (details) {
+              if (isMenuOpen) onMenuTap(MediaQuery.of(context).size);
+            },
+            onTap: () {
+              if (isMenuOpen) onMenuTap(MediaQuery.of(context).size);
+            },
+            child: Scaffold(
+              appBar: renderAppBar(context),
+              bottomNavigationBar: const BottomNav(),
+              body: const _MainBody(),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   AppBar renderAppBar(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final user = ref.watch(userProvider).user;
 
     return AppBar(
       centerTitle: true,
@@ -122,15 +120,8 @@ class HomeScreenState extends ConsumerState<HomeScreen>
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: kDefaultPadding),
-          child: CircleAvatar(
-            radius: 16,
-            child: ClipOval(
-              child: Image.network(
-                  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"),
-            ),
-          ),
-        ),
+            padding: const EdgeInsets.only(right: kDefaultPadding),
+            child: Avatar(photoURL: user.photoURL, radius: 14)),
       ],
       title: const Text(
         'Studie',
