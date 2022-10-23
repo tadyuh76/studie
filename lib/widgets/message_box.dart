@@ -55,7 +55,7 @@ class MessageBox extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.only(
                         left: kSmallPadding,
-                        bottom: kSmallPadding,
+                        bottom: 2,
                       ),
                       child: Text(
                         message.senderName,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
+import 'package:studie/providers/room_provider.dart';
+import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/room_screen/widgets/app_bar.dart';
 import 'package:studie/screens/room_screen/widgets/pomodoro.dart';
 import 'package:studie/screens/room_screen/widgets/study_session.dart';
@@ -19,15 +22,15 @@ final Map<String, Widget> tabs = {
   "notes": const NotesPage(),
 };
 
-class RoomScreen extends StatefulWidget {
+class RoomScreen extends ConsumerStatefulWidget {
   final Room room;
   const RoomScreen({super.key, required this.room});
 
   @override
-  State<RoomScreen> createState() => _RoomScreenState();
+  ConsumerState<RoomScreen> createState() => _RoomScreenState();
 }
 
-class _RoomScreenState extends State<RoomScreen> {
+class _RoomScreenState extends ConsumerState<RoomScreen> {
   final _pageController = PageController(initialPage: 0);
   int _currentTabIndex = 0;
 
@@ -44,7 +47,9 @@ class _RoomScreenState extends State<RoomScreen> {
   @override
   void dispose() {
     super.dispose();
+    // ref.read(roomProvider).exitRoom(widget.room.id);
     DBMethods().leaveRoom(widget.room.id);
+    _pageController.dispose();
   }
 
   @override

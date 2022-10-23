@@ -46,6 +46,7 @@ class DBMethods {
 
   Future<void> addUserToDB(User user) async {
     try {
+      print("adding this user to db: $user");
       await _db.collection('users').doc(user.uid).set({
         "uid": user.uid,
         "username": user.displayName ?? kDefaultName,
@@ -75,20 +76,31 @@ class DBMethods {
     }
   }
 
-  Future<void> joinRoom(
+  Future<bool> joinRoom(
     String roomId,
   ) async {
+    var joined = true;
     try {
       final user = model.UserModel.fromFirebaseUser(AuthMethods().user);
       final roomRef = _db.collection('rooms').doc(roomId);
+      final roomSnapshot = await roomRef.get();
+      final room = Room.fromJson(roomSnapshot.data() as Map<String, dynamic>);
+      if (room.curParticipants >= room.maxParticipants) {
+        joined = false;
+        print("room is full, cannot join right now!");
+        return joined;
+      }
 
       roomRef.collection('participants').doc(user.uid).set(user.toJson());
       roomRef.update({"curParticipants": FieldValue.increment(1)});
 
       debugPrint('joined room with id:  $roomId');
     } catch (e) {
+      joined = false;
       debugPrint('error joining room $e');
     }
+
+    return joined;
   }
 
   Future<void> leaveRoom(String roomId) async {
@@ -98,7 +110,7 @@ class DBMethods {
       currentRoomIn.collection('participants').doc(user.uid).delete();
 
       final curParticipants =
-          (await currentRoomIn.get()).data()!['curParticipants'];
+          (await currentRoomIn.get()).data()!["curParticipants"];
       if (curParticipants == 1) {
         currentRoomIn.delete();
       } else {

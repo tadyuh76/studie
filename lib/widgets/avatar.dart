@@ -9,15 +9,14 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return photoURL.isEmpty
-        ? CircleAvatar(
-            backgroundColor: kWhite,
-            radius: radius,
-            child: ClipRRect(child: SvgPicture.asset("assets/icons/user.svg")),
-          )
-        : CircleAvatar(
-            backgroundImage: NetworkImage(photoURL),
-            radius: radius,
-          );
+    return CircleAvatar(
+      backgroundColor: kWhite,
+      radius: radius,
+      child: ClipOval(
+        child: photoURL.isEmpty
+            ? SvgPicture.asset("assets/icons/user.svg")
+            : Image.network(photoURL, fit: BoxFit.cover),
+      ),
+    );
   }
 }

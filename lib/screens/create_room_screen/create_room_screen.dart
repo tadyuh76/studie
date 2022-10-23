@@ -6,6 +6,7 @@ import 'package:studie/constants/colors.dart';
 import 'package:studie/constants/tags_with_icons.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/providers/room_provider.dart';
+import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/create_room_screen/widgets/checkbox_option.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/services/db_methods.dart';
@@ -51,6 +52,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   }
 
   onCreateRoom(BuildContext context, WidgetRef ref) {
+    final user = ref.read(userProvider).user;
     final room = Room(
       name: _nameController.text,
       bannerColor: bannerColor,
@@ -59,17 +61,19 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       maxParticipants: int.parse(_maxParticipantsController.text),
       curParticipants: 0,
       type: 'public',
-      hostPhotoUrl:
-          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
+      hostPhotoUrl: user.photoURL,
+      hostUid: user.uid,
     );
 
-    _dbMethods.createRoom(room).then((value) {
-      _dbMethods.joinRoom(room.id);
-      ref.read(roomProvider).changeRoom(room);
+    _dbMethods.createRoom(room).then((_) {
+      _dbMethods.joinRoom(room.id).then((joined) {
+        if (!joined) return;
+        ref.read(roomProvider).changeRoom(room);
 
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => RoomScreen(room: room),
-      ));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (_) => RoomScreen(room: room),
+        ));
+      });
     });
   }
 

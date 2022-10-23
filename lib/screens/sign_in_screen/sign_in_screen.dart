@@ -70,6 +70,7 @@ class _SignInScreenState extends State<SignInScreen> {
       final userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       if (userCredential.user != null) {
+        print(userCredential.user);
         if (userCredential.additionalUserInfo!.isNewUser) {
           await DBMethods().addUserToDB(userCredential.user!);
         }

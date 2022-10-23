@@ -11,9 +11,11 @@ class Room {
   final int curParticipants;
   final String type;
   final String hostPhotoUrl;
+  final String hostUid;
 
   Room({
     this.id = '',
+    required this.hostUid,
     required this.name,
     required this.bannerColor,
     required this.description,
@@ -36,6 +38,7 @@ class Room {
       "maxParticipants": maxParticipants,
       "curParticipants": curParticipants,
       "type": type,
+      "hostUid": hostUid,
       "hostPhotoUrl": hostPhotoUrl,
     };
   }
@@ -50,6 +53,7 @@ class Room {
       maxParticipants: json['maxParticipants'],
       curParticipants: json['curParticipants'],
       type: json['type'],
+      hostUid: json['hostUid'],
       hostPhotoUrl: json['hostPhotoUrl'],
     );
   }
