@@ -1,20 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/user.dart';
 import 'package:studie/providers/user_provider.dart';
+import 'package:studie/services/auth_methods.dart';
 import 'package:studie/widgets/avatar.dart';
 
 class CustomDrawer extends ConsumerWidget {
   const CustomDrawer({super.key});
 
   void onLogOut(BuildContext context) {
-    FirebaseAuth.instance.signOut();
-    GoogleSignIn().signOut();
+    AuthMethods().signOut();
   }
 
   @override

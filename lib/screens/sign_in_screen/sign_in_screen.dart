@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/screens/sign_in_screen/widgets/login_button.dart';
-import 'package:studie/services/db_methods.dart';
+import 'package:studie/services/auth_methods.dart';
+import 'package:studie/utils/show_snack_bar.dart';
 import 'package:studie/widgets/auth_text_button.dart';
 import 'package:studie/widgets/auth_text_field.dart';
 
@@ -17,67 +16,34 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  bool _loading = false;
-
+  final _authMethods = AuthMethods();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future<void> onSubmit() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      return;
-    }
+  String get email => _emailController.text.trim();
+  String get password => _passwordController.text;
 
+  bool _loading = false;
+
+  Future<void> onSignIn() async {
     setState(() => _loading = true);
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-    } catch (e) {
-      print('error signing in: $e');
-    }
+    final result = await _authMethods.signIn(email: email, password: password);
+    if (result != "success" && mounted) showSnackBar(context, result);
     setState(() => _loading = false);
   }
 
   Future<void> onSignUp() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      return;
-    }
-
-    try {
-      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-      if (cred.user == null) return;
-      await DBMethods().addUserToDB(cred.user!);
-    } catch (e) {
-      print('error signing up: $e');
-    }
+    setState(() => _loading = true);
+    final result = await _authMethods.signUp(email: email, password: password);
+    if (result != "success" && mounted) showSnackBar(context, "result");
+    setState(() => _loading = false);
   }
 
   Future<void> signInWithGoogle() async {
-    try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return;
-
-      final googleAuth = await googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      final userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-      if (userCredential.user != null) {
-        print(userCredential.user);
-        if (userCredential.additionalUserInfo!.isNewUser) {
-          await DBMethods().addUserToDB(userCredential.user!);
-        }
-      }
-    } catch (e) {
-      print('error signing in with google: $e');
-    }
+    setState(() => _loading = true);
+    final result = await _authMethods.signInWithGoogle();
+    if (result != "success" && mounted) showSnackBar(context, "result");
+    setState(() => _loading = false);
   }
 
   @override
@@ -148,12 +114,12 @@ class _SignInScreenState extends State<SignInScreen> {
                     controller: _passwordController,
                     inputType: TextInputType.text,
                     toggleVisible: true,
-                    onEnter: onSubmit,
+                    onEnter: onSignIn,
                   ),
                   const SizedBox(height: kDefaultPadding),
                   CustomTextButton(
                     text: 'Đăng nhập',
-                    onTap: onSubmit,
+                    onTap: onSignIn,
                     primary: true,
                     loading: _loading,
                     disabled: _loading,
@@ -200,12 +166,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     children: [
                       LoginButton(iconName: "facebook", onTap: () {}),
                       const SizedBox(width: kDefaultPadding),
-                      LoginButton(
-                        iconName: 'google',
-                        onTap: () {
-                          signInWithGoogle();
-                        },
-                      ),
+                      LoginButton(iconName: 'google', onTap: signInWithGoogle),
                     ],
                   ),
                   if (isLongDevice) const SizedBox(height: 100),

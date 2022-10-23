@@ -12,7 +12,7 @@ class EnterButton extends ConsumerWidget {
 
   void onTap(BuildContext context, WidgetRef ref) {
     ref.read(roomProvider).changeRoom(room);
-    DBMethods().joinRoom(room.id).then((joined) {
+    DBMethods().joinRoom(room.id, context).then((joined) {
       if (!joined) return;
       Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => RoomScreen(room: room),

@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:studie/constants/default_values.dart';
 import 'package:studie/models/message.dart';
 import 'package:studie/models/room.dart';
-import 'package:studie/models/user.dart' as model;
+import 'package:studie/models/user.dart';
 import 'package:studie/services/auth_methods.dart';
+import 'package:studie/utils/show_snack_bar.dart';
 
 class DBMethods {
   final _db = FirebaseFirestore.instance;
+  final _authMethods = AuthMethods();
 
   Stream<QuerySnapshot> getMessages(String roomId) {
     final snapshots = _db
@@ -23,7 +25,9 @@ class DBMethods {
 
   Future<void> sendMessage(String message, String roomId) async {
     try {
-      final curUser = AuthMethods().user;
+      final curUser = _authMethods.user;
+      if (curUser == null) return;
+
       final messageObj = Message(
         id: '',
         senderId: curUser.uid,
@@ -46,7 +50,6 @@ class DBMethods {
 
   Future<void> addUserToDB(User user) async {
     try {
-      print("adding this user to db: $user");
       await _db.collection('users').doc(user.uid).set({
         "uid": user.uid,
         "username": user.displayName ?? kDefaultName,
@@ -76,18 +79,18 @@ class DBMethods {
     }
   }
 
-  Future<bool> joinRoom(
-    String roomId,
-  ) async {
+  Future<bool> joinRoom(String roomId, BuildContext context,
+      [mounted = true]) async {
     var joined = true;
     try {
-      final user = model.UserModel.fromFirebaseUser(AuthMethods().user);
+      final user = UserModel.fromFirebaseUser(_authMethods.user!);
       final roomRef = _db.collection('rooms').doc(roomId);
       final roomSnapshot = await roomRef.get();
       final room = Room.fromJson(roomSnapshot.data() as Map<String, dynamic>);
-      if (room.curParticipants >= room.maxParticipants) {
+
+      if (room.curParticipants >= room.maxParticipants && mounted) {
+        showSnackBar(context, "room is full, cannot join right now!");
         joined = false;
-        print("room is full, cannot join right now!");
         return joined;
       }
 
@@ -105,9 +108,9 @@ class DBMethods {
 
   Future<void> leaveRoom(String roomId) async {
     try {
-      final user = AuthMethods().user;
+      final user = _authMethods.user;
       final currentRoomIn = _db.collection('rooms').doc(roomId);
-      currentRoomIn.collection('participants').doc(user.uid).delete();
+      currentRoomIn.collection('participants').doc(user!.uid).delete();
 
       final curParticipants =
           (await currentRoomIn.get()).data()!["curParticipants"];

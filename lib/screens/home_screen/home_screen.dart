@@ -120,8 +120,9 @@ class HomeScreenState extends ConsumerState<HomeScreen>
       ),
       actions: [
         Padding(
-            padding: const EdgeInsets.only(right: kDefaultPadding),
-            child: Avatar(photoURL: user.photoURL, radius: 14)),
+          padding: const EdgeInsets.only(right: kDefaultPadding),
+          child: Avatar(photoURL: user.photoURL, radius: 14),
+        ),
       ],
       title: const Text(
         'Studie',

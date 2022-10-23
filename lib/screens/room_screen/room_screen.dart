@@ -4,8 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
-import 'package:studie/providers/room_provider.dart';
-import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/room_screen/widgets/app_bar.dart';
 import 'package:studie/screens/room_screen/widgets/pomodoro.dart';
 import 'package:studie/screens/room_screen/widgets/study_session.dart';

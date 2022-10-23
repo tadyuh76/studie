@@ -66,7 +66,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     );
 
     _dbMethods.createRoom(room).then((_) {
-      _dbMethods.joinRoom(room.id).then((joined) {
+      _dbMethods.joinRoom(room.id, context).then((joined) {
         if (!joined) return;
         ref.read(roomProvider).changeRoom(room);
 
