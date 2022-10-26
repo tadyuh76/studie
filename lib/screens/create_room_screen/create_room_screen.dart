@@ -10,6 +10,7 @@ import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/create_room_screen/widgets/checkbox_option.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/services/db_methods.dart';
+import 'package:studie/utils/show_snack_bar.dart';
 import 'package:studie/widgets/auth_text_button.dart';
 import 'package:studie/widgets/form/form_title.dart';
 import 'package:studie/widgets/form/number_input.dart';
@@ -51,7 +52,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     setState(() {});
   }
 
-  onCreateRoom(BuildContext context, WidgetRef ref) {
+  onCreateRoom(BuildContext context, WidgetRef ref) async {
     final user = ref.read(userProvider).user;
     final room = Room(
       name: _nameController.text,
@@ -65,16 +66,19 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       hostUid: user.uid,
     );
 
-    _dbMethods.createRoom(room).then((_) {
-      _dbMethods.joinRoom(room.id, context).then((joined) {
-        if (!joined) return;
-        ref.read(roomProvider).changeRoom(room);
+    final created = await _dbMethods.createRoom(room);
+    final result = await _dbMethods.joinRoom(room.id);
 
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) => RoomScreen(room: room),
-        ));
-      });
-    });
+    if (mounted) {
+      if (!created || result != "success") {
+        return showSnackBar(context, "Đã có lỗi khi tham gia phòng học!");
+      }
+
+      ref.read(roomProvider).changeRoom(room);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => RoomScreen(room: room),
+      ));
+    }
   }
 
   @override
@@ -192,10 +196,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                     const Expanded(
                       child: Text(
                         'Chọn tối đa 3 thẻ để miêu tả chủ đề phòng học của bạn tốt hơn.',
-                        style: TextStyle(
-                          color: kBlack,
-                          // fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(color: kBlack),
                       ),
                     ),
                     const SizedBox(width: kDefaultPadding),
@@ -338,11 +339,6 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                   fontSize: 20, fontWeight: FontWeight.bold, color: kBlack),
             ),
             const Spacer(),
-            IconButton(
-              splashRadius: 25,
-              onPressed: () {},
-              icon: const Icon(Icons.done, color: kPrimaryColor),
-            ),
           ],
         ),
       ),

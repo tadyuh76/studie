@@ -25,7 +25,7 @@ class _CameraViewPageState extends ConsumerState<CameraViewPage> {
       agoraConnectionData: AgoraConnectionData(
         appId: appId,
         tempToken: tempToken,
-        channelName: "tadyuh76",
+        channelName: channelName,
         username: _user.username,
       ),
     );

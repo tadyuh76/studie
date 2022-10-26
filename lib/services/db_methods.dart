@@ -67,7 +67,8 @@ class DBMethods {
     return _db.collection('rooms').snapshots();
   }
 
-  Future<void> createRoom(Room room) async {
+  Future<bool> createRoom(Room room) async {
+    bool created = true;
     try {
       final ref = await _db.collection('rooms').add(room.toJson());
       room.id = ref.id;
@@ -75,23 +76,24 @@ class DBMethods {
 
       debugPrint('room created!');
     } catch (e) {
+      created = false;
       debugPrint('error creating room: $e');
     }
+
+    return created;
   }
 
-  Future<bool> joinRoom(String roomId, BuildContext context,
-      [mounted = true]) async {
-    var joined = true;
+  Future<String> joinRoom(String roomId) async {
+    String result = "success";
+
     try {
       final user = UserModel.fromFirebaseUser(_authMethods.user!);
       final roomRef = _db.collection('rooms').doc(roomId);
       final roomSnapshot = await roomRef.get();
       final room = Room.fromJson(roomSnapshot.data() as Map<String, dynamic>);
 
-      if (room.curParticipants >= room.maxParticipants && mounted) {
-        showSnackBar(context, "room is full, cannot join right now!");
-        joined = false;
-        return joined;
+      if (room.curParticipants >= room.maxParticipants) {
+        return result = "Phòng học đã đầy!";
       }
 
       roomRef.collection('participants').doc(user.uid).set(user.toJson());
@@ -99,11 +101,11 @@ class DBMethods {
 
       debugPrint('joined room with id:  $roomId');
     } catch (e) {
-      joined = false;
+      result = "Không thể tham gia phòng học!";
       debugPrint('error joining room $e');
     }
 
-    return joined;
+    return result;
   }
 
   Future<void> leaveRoom(String roomId) async {
