@@ -18,8 +18,8 @@ dependencies:
   cloud_firestore: ^3.5.0
   firebase_auth: ^3.11.0
   google_sign_in: ^5.4.2
-  agora_uikit: ^1.0.4
   syncfusion_flutter_pdfviewer: ^20.3.49
+  agora_rtc_engine: ^6.0.0
 
 dev_dependencies:
   flutter_test:

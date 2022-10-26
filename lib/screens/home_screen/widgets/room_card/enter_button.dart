@@ -5,19 +5,24 @@ import 'package:studie/models/room.dart';
 import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/services/db_methods.dart';
+import 'package:studie/utils/show_snack_bar.dart';
 
 class EnterButton extends ConsumerWidget {
   final Room room;
   const EnterButton({super.key, required this.room});
 
-  void onTap(BuildContext context, WidgetRef ref) {
+  void onTap(BuildContext context, WidgetRef ref, [mounted = true]) async {
     ref.read(roomProvider).changeRoom(room);
-    DBMethods().joinRoom(room.id, context).then((joined) {
-      if (!joined) return;
+    final result = await DBMethods().joinRoom(room.id);
+    if (mounted) {
+      if (result != "success") {
+        return showSnackBar(context, result);
+      }
+
       Navigator.of(context).push(MaterialPageRoute(
         builder: (_) => RoomScreen(room: room),
       ));
-    });
+    }
   }
 
   @override

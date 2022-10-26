@@ -10,6 +10,7 @@ import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/create_room_screen/widgets/checkbox_option.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/services/db_methods.dart';
+import 'package:studie/utils/show_snack_bar.dart';
 import 'package:studie/widgets/auth_text_button.dart';
 import 'package:studie/widgets/form/form_title.dart';
 import 'package:studie/widgets/form/number_input.dart';
@@ -51,7 +52,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     setState(() {});
   }
 
-  onCreateRoom(BuildContext context, WidgetRef ref) {
+  onCreateRoom(BuildContext context, WidgetRef ref) async {
     final user = ref.read(userProvider).user;
     final room = Room(
       name: _nameController.text,
@@ -65,16 +66,20 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       hostUid: user.uid,
     );
 
-    _dbMethods.createRoom(room).then((_) {
-      _dbMethods.joinRoom(room.id, context).then((joined) {
-        if (!joined) return;
-        ref.read(roomProvider).changeRoom(room);
+    final created = await _dbMethods.createRoom(room);
+    if (!created && mounted) {
+      return showSnackBar(context, "Đã có lỗi xảy ra khi tạo phòng học!");
+    }
 
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) => RoomScreen(room: room),
-        ));
-      });
-    });
+    final result = await _dbMethods.joinRoom(room.id);
+    if (mounted) {
+      if (result != "success") return showSnackBar(context, result);
+
+      ref.read(roomProvider).changeRoom(room);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => RoomScreen(room: room),
+      ));
+    }
   }
 
   @override
