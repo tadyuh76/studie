@@ -93,40 +93,38 @@ import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/models/user.dart';
 import 'package:studie/providers/room_provider.dart';
+import 'package:studie/providers/room_settings_provider.dart';
 import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
 
 /// MultiChannel Example
 class CameraViewPage extends ConsumerStatefulWidget {
-  /// Construct the [CameraViewPage]
   const CameraViewPage({Key? key}) : super(key: key);
 
   @override
   ConsumerState<CameraViewPage> createState() => _State();
 }
 
-class _State extends ConsumerState<CameraViewPage> {
+class _State extends ConsumerState<CameraViewPage>
+    with AutomaticKeepAliveClientMixin {
+  final RtcEngine _engine = createAgoraRtcEngine();
   late final UserModel _user;
   late final Room _room;
 
-  late final RtcEngine _engine;
   bool _isReadyPreview = false;
 
   bool isJoined = false, switchCamera = true, switchRender = true;
-  bool cameraEnabled = false, micEnabled = false;
   Set<int> remoteUid = {};
-  // late TextEditingController _controller;
-  // bool _isUseFlutterTexture = false;
-  // bool _isUseAndroidSurfaceView = false;
-  // ChannelProfileType _channelProfileType =
-  //     ChannelProfileType.channelProfileLiveBroadcasting;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
     _user = ref.read(userProvider).user;
     _room = ref.read(roomProvider).room;
-    // _controller = TextEditingController(text: _user.username);
+
     _initEngine();
   }
 
@@ -141,11 +139,18 @@ class _State extends ConsumerState<CameraViewPage> {
     await _engine.release();
   }
 
+  void _settingsCall() {
+    final roomSettings = ref.read(roomSettingsProvider);
+    if (roomSettings.cameraEnabled) _engine.enableVideo();
+    if (roomSettings.micEnabled) _engine.enableAudio();
+    if (roomSettings.switchCamera) _engine.switchCamera();
+  }
+
   Future<void> _initEngine() async {
     await [Permission.camera, Permission.microphone].request();
 
-    _engine = createAgoraRtcEngine();
     await _engine.initialize(const RtcEngineContext(appId: appId));
+    await _engine.leaveChannel();
 
     _engine.registerEventHandler(RtcEngineEventHandler(
       onError: (ErrorCodeType err, String msg) {
@@ -195,6 +200,7 @@ class _State extends ConsumerState<CameraViewPage> {
       _isReadyPreview = true;
     });
 
+    _settingsCall();
     await _joinChannel();
   }
 
@@ -214,50 +220,51 @@ class _State extends ConsumerState<CameraViewPage> {
 
   Future<void> onSwitchCameraTap() async {
     await _engine.switchCamera();
-    switchCamera = !switchCamera;
-    setState(() {});
+    ref.read(roomSettingsProvider).updateSwitchCamera();
   }
 
   Future<void> onCameraTap() async {
+    final cameraEnabled = ref.read(roomSettingsProvider).cameraEnabled;
     if (cameraEnabled) {
       await _engine.disableVideo();
-      cameraEnabled = false;
     } else {
       await _engine.enableVideo();
-      cameraEnabled = true;
     }
 
-    setState(() {});
+    ref.read(roomSettingsProvider).updateCamera();
   }
 
   Future<void> onMicTap() async {
+    final micEnabled = ref.read(roomSettingsProvider).micEnabled;
+
     if (micEnabled) {
       await _engine.disableAudio();
-      micEnabled = false;
     } else {
       await _engine.enableAudio();
-      micEnabled = true;
     }
 
-    setState(() {});
+    ref.read(roomSettingsProvider).updateMic();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final roomSettings = ref.watch(roomSettingsProvider);
+
     return !_isReadyPreview
         ? const LoadingScreen()
         : Container(
             color: kBlack,
             child: Stack(
               children: [
-                if (cameraEnabled)
+                if (roomSettings.cameraEnabled)
                   AgoraVideoView(
                     controller: VideoViewController(
                       rtcEngine: _engine,
                       canvas: const VideoCanvas(uid: 0),
                     ),
                   ),
-                if (cameraEnabled)
+                if (roomSettings.cameraEnabled)
                   Align(
                     alignment: Alignment.topLeft,
                     child: SingleChildScrollView(
@@ -291,14 +298,14 @@ class _State extends ConsumerState<CameraViewPage> {
                           onTap: onCameraTap,
                           disabledIcon: Icons.videocam_off_rounded,
                           enabledIcon: Icons.videocam_rounded,
-                          enabled: cameraEnabled,
+                          enabled: roomSettings.cameraEnabled,
                         ),
                         const SizedBox(width: kDefaultPadding),
                         _CallButton(
                           onTap: onMicTap,
                           disabledIcon: Icons.mic_off_rounded,
                           enabledIcon: Icons.mic_rounded,
-                          enabled: micEnabled,
+                          enabled: roomSettings.micEnabled,
                         ),
                         const SizedBox(width: kDefaultPadding),
                         _CallButton(
@@ -315,8 +322,6 @@ class _State extends ConsumerState<CameraViewPage> {
             ),
           );
   }
-  // if (!_isInit) return Container();
-
 }
 
 class _CallButton extends StatelessWidget {

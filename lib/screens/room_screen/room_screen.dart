@@ -4,13 +4,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
+import 'package:studie/providers/pomodoro_provider.dart';
 import 'package:studie/screens/room_screen/widgets/app_bar.dart';
-import 'package:studie/screens/room_screen/widgets/pomodoro.dart';
+import 'package:studie/screens/room_screen/widgets/pomodoro_widget.dart';
 import 'package:studie/screens/room_screen/widgets/study_session.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/camera_view.dart';
-import 'package:studie/screens/room_screen/widgets/tab_pages/chats.dart';
+import 'package:studie/screens/room_screen/widgets/tab_pages/chats_view.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/file_view.dart';
-import 'package:studie/screens/room_screen/widgets/tab_pages/whiteboard.dart';
+import 'package:studie/screens/room_screen/widgets/tab_pages/notes_view.dart';
 import 'package:studie/services/db_methods.dart';
 
 final Map<String, Widget> tabs = {
@@ -43,6 +44,15 @@ class _RoomScreenState extends ConsumerState<RoomScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    final pomodoro = ref.read(pomodoroProvider);
+    pomodoro.initTimer("pomodoro_25");
+    pomodoro.startTimer();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     // ref.read(roomProvider).exitRoom(widget.room.id);
@@ -64,7 +74,7 @@ class _RoomScreenState extends ConsumerState<RoomScreen> {
                 horizontal: kDefaultPadding, vertical: kMediumPadding),
             child: Row(
               children: [
-                const Pomodoro(),
+                const PomodoroWidget(),
                 const SizedBox(width: kMediumPadding),
                 const GoalSession(),
                 const Spacer(),

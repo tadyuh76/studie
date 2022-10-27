@@ -6,10 +6,11 @@ class GoalSession extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const UtilityTab(
+    return UtilityTab(
       icon: 'goal',
       title: 'Mục tiêu',
       value: '0/3',
+      onTap: () {},
     );
   }
 }

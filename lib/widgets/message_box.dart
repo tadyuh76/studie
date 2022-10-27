@@ -18,7 +18,7 @@ class MessageBox extends ConsumerWidget {
     final messageMaxWidth = screenWidth * 0.7;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: kSmallPadding),
+      padding: const EdgeInsets.only(bottom: kSmallPadding),
       child: isSender
           ? Align(
               alignment: Alignment.centerRight,

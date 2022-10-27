@@ -84,6 +84,10 @@ class DBMethods {
 
   Future<String> joinRoom(String roomId) async {
     String result = "success";
+    try {
+      final user = UserModel.fromFirebaseUser(_authMethods.user!);
+      final roomRef = _db.collection('rooms').doc(roomId);
+      final roomSnapshot = await roomRef.get();
       final room = Room.fromJson(roomSnapshot.data() as Map<String, dynamic>);
 
       if (room.curParticipants >= room.maxParticipants) {

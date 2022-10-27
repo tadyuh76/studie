@@ -5,6 +5,7 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/message.dart';
 import 'package:studie/providers/room_provider.dart';
+import 'package:studie/screens/loading_screen/loading_screen.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/widgets/message_box.dart';
 
@@ -25,38 +26,53 @@ class ChatsPage extends ConsumerWidget {
     final roomId = ref.read(roomProvider).room.id;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-        child: ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-          child: StreamBuilder(
-              stream: DBMethods().getMessages(roomId),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final messages = snapshot.data!.docs
-                      .map((doc) =>
-                          Message.fromJson(doc.data() as Map<String, dynamic>))
-                      .toList();
-
-                  return ListView.builder(
-                    addRepaintBoundaries: false,
-                    reverse: true,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: messages.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return MessageBox(message: messages[index]);
-                    },
+      body: LayoutBuilder(builder: (context, constraints) {
+        return StreamBuilder(
+            stream: DBMethods().getMessages(roomId),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data!.docs.isEmpty) {
+                  return const Text(
+                    "Trò chuyện, trao đổi về bài học tại đây !",
                   );
                 }
-                if (snapshot.hasError) {
-                  return Text('error getting messages: ${snapshot.error}');
-                }
 
-                return const Center(child: CircularProgressIndicator());
-              }),
-        ),
-      ),
+                final messages = snapshot.data!.docs
+                    .map((doc) =>
+                        Message.fromJson(doc.data() as Map<String, dynamic>))
+                    .toList();
+
+                return ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context)
+                      .copyWith(scrollbars: false),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    child: ListView.builder(
+                      addRepaintBoundaries: false,
+                      reverse: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: messages.length + 1,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return const SizedBox(height: kDefaultPadding);
+                        }
+                        return MessageBox(message: messages[index - 1]);
+                      },
+                    ),
+                  ),
+                );
+              }
+              if (snapshot.hasError) {
+                return Text('error getting messages: ${snapshot.error}');
+              }
+
+              return const LoadingScreen();
+            });
+      }),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(
           vertical: kMediumPadding,
