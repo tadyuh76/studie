@@ -6,7 +6,6 @@ import 'package:studie/models/message.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/models/user.dart';
 import 'package:studie/services/auth_methods.dart';
-import 'package:studie/utils/show_snack_bar.dart';
 
 class DBMethods {
   final _db = FirebaseFirestore.instance;
@@ -78,18 +77,13 @@ class DBMethods {
     } catch (e) {
       created = false;
       debugPrint('error creating room: $e');
+      created = false;
     }
-
     return created;
   }
 
   Future<String> joinRoom(String roomId) async {
     String result = "success";
-
-    try {
-      final user = UserModel.fromFirebaseUser(_authMethods.user!);
-      final roomRef = _db.collection('rooms').doc(roomId);
-      final roomSnapshot = await roomRef.get();
       final room = Room.fromJson(roomSnapshot.data() as Map<String, dynamic>);
 
       if (room.curParticipants >= room.maxParticipants) {
@@ -101,7 +95,7 @@ class DBMethods {
 
       debugPrint('joined room with id:  $roomId');
     } catch (e) {
-      result = "Không thể tham gia phòng học!";
+      result = "Đã có lỗi xảy ra khi vào phòng học!";
       debugPrint('error joining room $e');
     }
 

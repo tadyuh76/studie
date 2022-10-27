@@ -67,12 +67,13 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     );
 
     final created = await _dbMethods.createRoom(room);
-    final result = await _dbMethods.joinRoom(room.id);
+    if (!created && mounted) {
+      return showSnackBar(context, "Đã có lỗi xảy ra khi tạo phòng học!");
+    }
 
+    final result = await _dbMethods.joinRoom(room.id);
     if (mounted) {
-      if (!created || result != "success") {
-        return showSnackBar(context, "Đã có lỗi khi tham gia phòng học!");
-      }
+      if (result != "success") return showSnackBar(context, result);
 
       ref.read(roomProvider).changeRoom(room);
       Navigator.of(context).pushReplacement(MaterialPageRoute(

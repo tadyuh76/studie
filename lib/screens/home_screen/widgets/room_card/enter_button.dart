@@ -14,7 +14,6 @@ class EnterButton extends ConsumerWidget {
   void onTap(BuildContext context, WidgetRef ref, [mounted = true]) async {
     ref.read(roomProvider).changeRoom(room);
     final result = await DBMethods().joinRoom(room.id);
-
     if (mounted) {
       if (result != "success") {
         return showSnackBar(context, result);
