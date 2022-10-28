@@ -11,7 +11,7 @@ import 'package:studie/screens/create_room_screen/widgets/checkbox_option.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/utils/show_snack_bar.dart';
-import 'package:studie/widgets/auth_text_button.dart';
+import 'package:studie/widgets/auth/auth_text_button.dart';
 import 'package:studie/widgets/form/form_title.dart';
 import 'package:studie/widgets/form/number_input.dart';
 import 'package:studie/widgets/form/pomodoro_setting.dart';
@@ -31,14 +31,22 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _maxParticipantsController = TextEditingController();
+
   bool micEnable = false;
   bool cameraEnable = false;
   bool chatEnable = true;
   String pomodoroType = 'pomodoro_50';
   List<String> selectedTags = [];
   String bannerColor = 'red';
-
   int _currentStep = 0;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _maxParticipantsController.dispose();
+  }
 
   onTagSelect(String tagText) {
     if (selectedTags.contains(tagText)) {

@@ -6,17 +6,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const minute = 60;
 
 class PomodoroNotifier extends ChangeNotifier {
-  int _timePerSession = 0;
-  int _breaktimeDuration = 0;
-  int _longbreakDuration = 0;
-  int _totalSessions = 0;
+  int _timePerSession = 0,
+      _breaktimeDuration = 0,
+      _longbreakDuration = 0,
+      _totalSessions = 0,
+      _remainTime = 0,
+      _remainBreaktime = 0,
+      _remainSessions = 0;
 
-  int _remainTime = 0;
-  int _remainBreaktime = 0;
-  int _remainSessions = 3;
+  bool _isStudying = false, _isBreaktime = false;
 
-  bool _isStudying = false;
-  bool _isBreaktime = false;
+  String get formattedTime {
+    int minutes = (_remainTime / 60).truncate();
+    String minutesStr = (minutes % 60).toString().padLeft(2, '0');
+    return minutesStr;
+  }
 
   int get timePerSession => _timePerSession;
   int get breaktimeDuration => _breaktimeDuration;
@@ -28,8 +32,8 @@ class PomodoroNotifier extends ChangeNotifier {
   int get remainBreaktime => _remainBreaktime;
   int get remainSessions => _remainSessions;
 
-  bool get completedSession => _isStudying;
-  bool get completedBreaktime => _isBreaktime;
+  bool get isStrudying => _isStudying;
+  bool get isBreaktime => _isBreaktime;
 
   initTimer(String pomodoroType, [int totalSessions = 3]) {
     switch (pomodoroType) {
@@ -89,6 +93,19 @@ class PomodoroNotifier extends ChangeNotifier {
       }
       notifyListeners();
     });
+  }
+
+  void reset() {
+    _timePerSession = 0;
+    _breaktimeDuration = 0;
+    _longbreakDuration = 0;
+    _totalSessions = 0;
+    _remainTime = 0;
+    _remainBreaktime = 0;
+    _remainSessions = 0;
+    _isStudying = false;
+    _isBreaktime = false;
+    notifyListeners();
   }
 }
 

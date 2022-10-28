@@ -17,6 +17,7 @@ class UserNotifier extends ChangeNotifier {
           .doc(currentUserId)
           .get();
       if (!snapshot.exists) return;
+
       debugPrint("got user data from firestore: ${snapshot.data()}");
       _user = UserModel.fromJson(snapshot.data()!);
       notifyListeners();

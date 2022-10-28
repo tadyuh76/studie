@@ -5,6 +5,7 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/providers/pomodoro_provider.dart';
+import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/room_screen/widgets/app_bar.dart';
 import 'package:studie/screens/room_screen/widgets/pomodoro_widget.dart';
 import 'package:studie/screens/room_screen/widgets/study_session.dart';
@@ -12,7 +13,9 @@ import 'package:studie/screens/room_screen/widgets/tab_pages/camera_view.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/chats_view.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/file_view.dart';
 import 'package:studie/screens/room_screen/widgets/tab_pages/notes_view.dart';
-import 'package:studie/services/db_methods.dart';
+import 'package:studie/utils/show_custom_dialogs.dart';
+import 'package:studie/widgets/auth/auth_text_button.dart';
+import 'package:studie/widgets/custom_dialog.dart';
 
 final Map<String, Widget> tabs = {
   "camera": const CameraViewPage(),
@@ -33,16 +36,6 @@ class _RoomScreenState extends ConsumerState<RoomScreen> {
   final _pageController = PageController(initialPage: 0);
   int _currentTabIndex = 0;
 
-  void onTabTap(int index) {
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
-    _currentTabIndex = index;
-    setState(() {});
-  }
-
   @override
   void initState() {
     super.initState();
@@ -55,55 +48,93 @@ class _RoomScreenState extends ConsumerState<RoomScreen> {
   @override
   void dispose() {
     super.dispose();
-    // ref.read(roomProvider).exitRoom(widget.room.id);
-    DBMethods().leaveRoom(widget.room.id);
     _pageController.dispose();
+  }
+
+  void onTabTap(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
+    _currentTabIndex = index;
+    setState(() {});
+  }
+
+  Future<bool> _onQuitRoom() async {
+    showCustomDialog(
+      context: context,
+      dialog: CustomDialog(
+        title: "Thoát phòng học",
+        child: Column(
+          children: [
+            FlutterLogo(size: 100),
+            const Text("Bạn có thực sự muốn rời phòng học?"),
+            CustomTextButton(
+              text: "Thoát",
+              onTap: () {
+                ref.read(roomProvider).exitRoom(widget.room.id);
+                ref.read(pomodoroProvider).reset();
+                Navigator.of(context)
+                  ..pop()
+                  ..pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: RoomAppBar(roomName: widget.room.name),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: kDefaultPadding, vertical: kMediumPadding),
-            child: Row(
-              children: [
-                const PomodoroWidget(),
-                const SizedBox(width: kMediumPadding),
-                const GoalSession(),
-                const Spacer(),
-                SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: Material(
-                    color: kLightGrey,
-                    clipBehavior: Clip.hardEdge,
-                    borderRadius: BorderRadius.circular(10),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Center(
-                        child: SvgPicture.asset(
-                          'assets/icons/music.svg',
-                          color: kTextColor,
-                          width: 32,
-                          height: 32,
+    return WillPopScope(
+      onWillPop: _onQuitRoom,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: RoomAppBar(roomName: widget.room.name),
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kDefaultPadding, vertical: kMediumPadding),
+              child: Row(
+                children: [
+                  const PomodoroWidget(),
+                  const SizedBox(width: kMediumPadding),
+                  const GoalSession(),
+                  const Spacer(),
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: Material(
+                      color: kLightGrey,
+                      clipBehavior: Clip.hardEdge,
+                      borderRadius: BorderRadius.circular(10),
+                      child: InkWell(
+                        onTap: () {},
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/icons/music.svg',
+                            color: kTextColor,
+                            width: 32,
+                            height: 32,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
-          renderTabNavigator(),
-          renderTabView(),
-        ],
+            renderTabNavigator(),
+            renderTabView(),
+          ],
+        ),
       ),
     );
   }

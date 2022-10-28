@@ -4,8 +4,8 @@ import 'package:studie/constants/colors.dart';
 import 'package:studie/screens/sign_in_screen/widgets/login_button.dart';
 import 'package:studie/services/auth_methods.dart';
 import 'package:studie/utils/show_snack_bar.dart';
-import 'package:studie/widgets/auth_text_button.dart';
-import 'package:studie/widgets/auth_text_field.dart';
+import 'package:studie/widgets/auth/auth_text_button.dart';
+import 'package:studie/widgets/auth/auth_text_field.dart';
 
 class SignInScreen extends StatefulWidget {
   static const routeName = '/signin';

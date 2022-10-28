@@ -5,6 +5,7 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/providers/pomodoro_provider.dart';
 import 'package:studie/screens/room_screen/widgets/utility_tab.dart';
+import 'package:studie/utils/format_time.dart';
 
 class PomodoroWidget extends ConsumerWidget {
   const PomodoroWidget({super.key});
@@ -23,7 +24,7 @@ class PomodoroWidget extends ConsumerWidget {
     return UtilityTab(
       icon: 'clock',
       title: 'Pomodoro',
-      value: ref.watch(pomodoroProvider).studiedTime.toString(),
+      value: formatTime(ref.watch(pomodoroProvider).remainTime),
       onTap: () => _showPomodoroBox(context),
     );
   }
@@ -55,12 +56,10 @@ class _PomodoroBox extends StatelessWidget {
                 width: 200,
                 child: Consumer(builder: (context, ref, _) {
                   final pomodoro = ref.watch(pomodoroProvider);
-                  final studiedTime = pomodoro.studiedTime;
-                  final timePerSession = pomodoro.timePerSession;
 
                   return CircularPercentIndicator(
                     radius: 100,
-                    percent: studiedTime / timePerSession,
+                    percent: pomodoro.studiedTime / pomodoro.timePerSession,
                     progressColor: kPrimaryColor,
                     backgroundColor: kLightGrey,
                     lineWidth: 12,
@@ -70,17 +69,10 @@ class _PomodoroBox extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "$studiedTime",
+                            text: formatTime(pomodoro.remainTime),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: kBlack,
-                              fontSize: 20,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "/$timePerSession",
-                            style: const TextStyle(
-                              color: kDarkGrey,
                               fontSize: 20,
                             ),
                           ),

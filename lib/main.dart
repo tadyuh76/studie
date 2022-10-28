@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/firebase_options.dart';
 import 'package:studie/screens/create_room_screen/create_room_screen.dart';
-import 'package:studie/screens/home_screen/home_screen.dart';
 import 'package:studie/screens/root_screen/root_screen.dart';
 import 'package:studie/screens/sign_in_screen/sign_in_screen.dart';
 import 'package:studie/screens/sign_up_screen/sign_up_screen.dart';
@@ -40,7 +39,7 @@ class App extends StatelessWidget {
       routes: {
         SignInScreen.routeName: ((context) => const SignInScreen()),
         SignUpScreen.routeName: ((context) => const SignUpScreen()),
-        HomeScreen.routeName: ((context) => const HomeScreen()),
+        RootScreen.routeName: ((context) => const RootScreen()),
         CreateRoomScreen.routeName: ((context) => const CreateRoomScreen())
       },
       home: StreamBuilder(
