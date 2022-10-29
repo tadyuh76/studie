@@ -4,17 +4,20 @@ import 'package:studie/constants/colors.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title;
+  final Alignment alignment;
   final Widget child;
 
   const CustomDialog({
     super.key,
     required this.title,
     required this.child,
+    this.alignment = Alignment.center,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: alignment,
       child: Material(
         color: Colors.transparent,
         clipBehavior: Clip.hardEdge,
@@ -30,8 +33,12 @@ class CustomDialog extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: kDefaultPadding),
+                  padding: const EdgeInsets.only(
+                    top: kDefaultPadding,
+                    bottom: kMediumPadding,
+                    right: kDefaultPadding,
+                    left: kDefaultPadding,
+                  ),
                   child: Text(
                     title,
                     style: const TextStyle(
@@ -41,7 +48,9 @@ class CustomDialog extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Divider(color: kLightGrey),
+                const Divider(
+                  color: kDarkGrey,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(kDefaultPadding),
                   child: child,

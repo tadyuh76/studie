@@ -6,35 +6,44 @@ import 'package:studie/constants/colors.dart';
 import 'package:studie/providers/pomodoro_provider.dart';
 import 'package:studie/screens/room_screen/widgets/utility_tab.dart';
 import 'package:studie/utils/format_time.dart';
+import 'package:studie/widgets/auth/auth_text_button.dart';
 
 class PomodoroWidget extends ConsumerWidget {
   const PomodoroWidget({super.key});
 
-  void _showPomodoroBox(BuildContext context) {
+  void _showPomodoroBox(BuildContext context, bool isStudying) {
     showDialog(
       context: context,
       barrierDismissible: true,
       barrierColor: Colors.transparent,
-      builder: (context) => const _PomodoroBox(),
+      builder: (context) => _PomodoroBox(isStudying),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final pomodoro = ref.watch(pomodoroProvider);
+    final isStudying = pomodoro.isStudying;
+    final remainTime =
+        isStudying ? pomodoro.remainTime : pomodoro.remainBreaktime;
+
     return UtilityTab(
       icon: 'clock',
-      title: 'Pomodoro',
-      value: formatTime(ref.watch(pomodoroProvider).remainTime),
-      onTap: () => _showPomodoroBox(context),
+      title: isStudying ? "Pomodoro" : 'Giải lao',
+      value: formatTime(remainTime),
+      onTap: () => _showPomodoroBox(context, isStudying),
     );
   }
 }
 
 class _PomodoroBox extends StatelessWidget {
-  const _PomodoroBox();
+  final bool isStudying;
+  const _PomodoroBox(this.isStudying);
 
   @override
   Widget build(BuildContext context) {
+    // if (!isStudying) return const SizedBox.shrink();
+
     return Padding(
       padding: const EdgeInsets.only(
           top: kToolbarHeight + 80, left: kDefaultPadding),
@@ -49,15 +58,15 @@ class _PomodoroBox extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: [BoxShadow(blurRadius: 4, color: kShadow)],
           ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 200,
-                width: 200,
-                child: Consumer(builder: (context, ref, _) {
-                  final pomodoro = ref.watch(pomodoroProvider);
+          child: Consumer(builder: (context, ref, _) {
+            final pomodoro = ref.watch(pomodoroProvider);
 
-                  return CircularPercentIndicator(
+            return Column(
+              children: [
+                SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: CircularPercentIndicator(
                     radius: 100,
                     percent: pomodoro.studiedTime / pomodoro.timePerSession,
                     progressColor: kPrimaryColor,
@@ -79,11 +88,22 @@ class _PomodoroBox extends StatelessWidget {
                         ],
                       ),
                     ),
-                  );
-                }),
-              ),
-            ],
-          ),
+                  ),
+                ),
+                const SizedBox(height: kDefaultPadding),
+                CustomTextButton(
+                  text: pomodoro.isStudying ? "Tạm dừng" : "Tiếp tục",
+                  primary: true,
+                  onTap: () {
+                    pomodoro.isStudying
+                        ? pomodoro.stopTimer()
+                        : pomodoro.startTimer(context);
+                  },
+                ),
+              ],
+            );
+            // return Container();
+          }),
         ),
       ),
     );

@@ -20,6 +20,7 @@ dependencies:
   google_sign_in: ^5.4.2
   syncfusion_flutter_pdfviewer: ^20.3.49
   agora_rtc_engine: ^6.0.0
+  lottie: ^1.4.3
 
 dev_dependencies:
   flutter_test:

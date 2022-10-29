@@ -6,16 +6,16 @@ import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/providers/pomodoro_provider.dart';
 import 'package:studie/providers/room_provider.dart';
+import 'package:studie/screens/room_screen/tab_pages/camera_view.dart';
+import 'package:studie/screens/room_screen/tab_pages/chats_view.dart';
+import 'package:studie/screens/room_screen/tab_pages/file_view.dart';
+import 'package:studie/screens/room_screen/tab_pages/notes_view.dart';
 import 'package:studie/screens/room_screen/widgets/app_bar.dart';
 import 'package:studie/screens/room_screen/widgets/pomodoro_widget.dart';
 import 'package:studie/screens/room_screen/widgets/study_session.dart';
-import 'package:studie/screens/room_screen/widgets/tab_pages/camera_view.dart';
-import 'package:studie/screens/room_screen/widgets/tab_pages/chats_view.dart';
-import 'package:studie/screens/room_screen/widgets/tab_pages/file_view.dart';
-import 'package:studie/screens/room_screen/widgets/tab_pages/notes_view.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
-import 'package:studie/widgets/auth/auth_text_button.dart';
-import 'package:studie/widgets/custom_dialog.dart';
+import 'package:studie/utils/show_snack_bar.dart';
+import 'package:studie/widgets/dialogs/leave_dialog.dart';
 
 final Map<String, Widget> tabs = {
   "camera": const CameraViewPage(),
@@ -24,7 +24,10 @@ final Map<String, Widget> tabs = {
   "notes": const NotesPage(),
 };
 
+final globalKey = GlobalKey();
+
 class RoomScreen extends ConsumerStatefulWidget {
+  static const routeName = "/room";
   final Room room;
   const RoomScreen({super.key, required this.room});
 
@@ -32,23 +35,41 @@ class RoomScreen extends ConsumerStatefulWidget {
   ConsumerState<RoomScreen> createState() => _RoomScreenState();
 }
 
-class _RoomScreenState extends ConsumerState<RoomScreen> {
+class _RoomScreenState extends ConsumerState<RoomScreen>
+    with WidgetsBindingObserver {
   final _pageController = PageController(initialPage: 0);
   int _currentTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     final pomodoro = ref.read(pomodoroProvider);
-    pomodoro.initTimer("pomodoro_25");
-    pomodoro.startTimer();
+    pomodoro.initTimer("pomodoro_test");
+    pomodoro.startTimer(context);
   }
 
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     _pageController.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state, [mounted = true]) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      showSnackBar(
+        context,
+        "Đã rời khỏi phòng học do thoát ứng dụng đột ngột!",
+      );
+    }
+    if (state == AppLifecycleState.paused) {
+      ref.read(roomProvider).exitRoom(widget.room.id);
+      ref.read(pomodoroProvider).reset();
+      Navigator.of(context).pop();
+    }
   }
 
   void onTabTap(int index) {
@@ -64,25 +85,12 @@ class _RoomScreenState extends ConsumerState<RoomScreen> {
   Future<bool> _onQuitRoom() async {
     showCustomDialog(
       context: context,
-      dialog: CustomDialog(
-        title: "Thoát phòng học",
-        child: Column(
-          children: [
-            FlutterLogo(size: 100),
-            const Text("Bạn có thực sự muốn rời phòng học?"),
-            CustomTextButton(
-              text: "Thoát",
-              onTap: () {
-                ref.read(roomProvider).exitRoom(widget.room.id);
-                ref.read(pomodoroProvider).reset();
-                Navigator.of(context)
-                  ..pop()
-                  ..pop();
-              },
-            ),
-          ],
-        ),
-      ),
+      dialog: LeaveDialog(() {
+        ref.read(roomProvider).exitRoom(widget.room.id);
+        ref.read(pomodoroProvider).reset();
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      }),
     );
 
     return false;
@@ -93,6 +101,7 @@ class _RoomScreenState extends ConsumerState<RoomScreen> {
     return WillPopScope(
       onWillPop: _onQuitRoom,
       child: Scaffold(
+        key: globalKey,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: RoomAppBar(roomName: widget.room.name),

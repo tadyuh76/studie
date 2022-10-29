@@ -1,11 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:studie/screens/room_screen/room_screen.dart';
+import 'package:studie/utils/show_custom_dialogs.dart';
+import 'package:studie/widgets/dialogs/breaktime_dialog.dart';
+import 'package:studie/widgets/dialogs/custom_dialog.dart';
+import 'package:studie/widgets/dialogs/return_from_breaktime.dart';
 
 const minute = 60;
 
 class PomodoroNotifier extends ChangeNotifier {
+  Timer? _studyTimer, _breaktimeTimer;
   int _timePerSession = 0,
       _breaktimeDuration = 0,
       _longbreakDuration = 0,
@@ -32,10 +39,10 @@ class PomodoroNotifier extends ChangeNotifier {
   int get remainBreaktime => _remainBreaktime;
   int get remainSessions => _remainSessions;
 
-  bool get isStrudying => _isStudying;
+  bool get isStudying => _isStudying;
   bool get isBreaktime => _isBreaktime;
 
-  initTimer(String pomodoroType, [int totalSessions = 3]) {
+  void initTimer(String pomodoroType, [int totalSessions = 3]) {
     switch (pomodoroType) {
       case "pomodoro_25":
         _timePerSession = 25 * minute;
@@ -48,33 +55,45 @@ class PomodoroNotifier extends ChangeNotifier {
         _longbreakDuration = 30 * minute;
         break;
       default:
-        _timePerSession = 50 * minute;
-        _breaktimeDuration = 10 * minute;
-        _longbreakDuration = 30 * minute;
+        _timePerSession = (0.1 * minute).toInt();
+        _breaktimeDuration = (0.1 * minute).toInt();
+        _longbreakDuration = 2 * minute;
     }
+    _remainTime = _timePerSession;
+    _remainBreaktime = _breaktimeDuration;
     _totalSessions = totalSessions;
     _remainSessions = totalSessions;
   }
 
-  startTimer() {
+  void setupStudyTimer() {
+    _remainTime = _timePerSession;
+    // notifyListeners();
+  }
+
+  void startTimer(BuildContext context) {
     if (_isStudying) return;
 
     _isStudying = true;
     _isBreaktime = false;
 
-    _remainTime = _timePerSession;
-
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _studyTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _remainTime--;
+
       if (_remainTime == 0) {
         timer.cancel();
         _isStudying = false;
+
+        showCustomDialog(
+          context: globalKey.currentState!.context,
+          dialog: const BreaktimeDialog(),
+          canDismiss: false,
+        );
       }
       notifyListeners();
     });
   }
 
-  startBreaktime() {
+  void startBreaktime() {
     if (_isBreaktime) return;
 
     _isStudying = false;
@@ -82,17 +101,36 @@ class PomodoroNotifier extends ChangeNotifier {
 
     final numSessionsCompleted = _totalSessions - _remainSessions;
     final isLongBreak = numSessionsCompleted % 3 == 0;
-    _remainBreaktime = isLongBreak ? _longbreakDuration : _breaktimeDuration;
+    _remainBreaktime = (numSessionsCompleted > 0 && isLongBreak)
+        ? _longbreakDuration
+        : _breaktimeDuration;
+    notifyListeners();
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _breaktimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _remainBreaktime--;
       if (_remainBreaktime == 0) {
         timer.cancel();
+        _isBreaktime = false;
         _remainSessions--;
-        _isBreaktime = true;
+
+        showCustomDialog(
+          context: globalKey.currentState!.context,
+          dialog: const ReturnFromBreaktimeDialog(),
+          canDismiss: false,
+        );
       }
       notifyListeners();
     });
+  }
+
+  void stopTimer() {
+    _isStudying = false;
+    _studyTimer!.cancel();
+    notifyListeners();
+  }
+
+  void continueTimer() {
+    startTimer(globalKey.currentState!.context);
   }
 
   void reset() {
@@ -105,6 +143,8 @@ class PomodoroNotifier extends ChangeNotifier {
     _remainSessions = 0;
     _isStudying = false;
     _isBreaktime = false;
+    _studyTimer?.cancel();
+    _breaktimeTimer?.cancel();
     notifyListeners();
   }
 }
