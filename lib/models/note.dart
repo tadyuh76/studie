@@ -1,10 +1,10 @@
 class Note {
-  final String id;
-  final String title;
-  final String text;
-  final String lastEdit;
-  final String color;
-  final int numberOfFlashcards;
+  String id;
+  String title;
+  String text;
+  String lastEdit;
+  String color;
+  String folderName;
 
   Note({
     required this.id,
@@ -12,6 +12,18 @@ class Note {
     required this.text,
     required this.lastEdit,
     required this.color,
-    required this.numberOfFlashcards,
+    required this.folderName,
   });
+
+  void copyWith({
+    String? newTitle,
+    String? newText,
+    String? newFolderName,
+    String? newColor,
+  }) {
+    title = newTitle ?? title;
+    text = newText ?? text;
+    folderName = newFolderName ?? folderName;
+    color = newColor ?? color;
+  }
 }

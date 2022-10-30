@@ -3,6 +3,7 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/note.dart';
 import 'package:studie/screens/notes_screen/widgets/note_widget.dart';
+import 'package:studie/widgets/hide_scrollbar.dart';
 
 final notes = [
   Note(
@@ -12,7 +13,7 @@ final notes = [
     lastEdit: DateTime.now().toString(),
     id: "",
     color: "blue",
-    numberOfFlashcards: 12,
+    folderName: "Vật lý",
   ),
   Note(
     id: "",
@@ -21,7 +22,7 @@ final notes = [
         "Mã di truyền là trật tự các nucleotit trên gen quy định trật tự các axit amin trên protein",
     lastEdit: DateTime.now().toString(),
     color: "black",
-    numberOfFlashcards: 7,
+    folderName: "Sinh học",
   ),
   Note(
     id: "",
@@ -29,7 +30,7 @@ final notes = [
     text: "Nhiễm sắc thể là vật chất di truyền ở cấp độ tế bào",
     lastEdit: DateTime.now().toString(),
     color: "lavender",
-    numberOfFlashcards: 13,
+    folderName: "Sinh học",
   ),
   Note(
     id: "",
@@ -37,7 +38,7 @@ final notes = [
     text: "Đường glucozo là một monosaccarit có công thức phân tử là C6H12O6",
     lastEdit: DateTime.now().toString(),
     color: "orange",
-    numberOfFlashcards: 11,
+    folderName: "Hóa học",
   ),
   Note(
     id: "",
@@ -46,7 +47,7 @@ final notes = [
         "to broadcast propaganda: to send out a programme on television or radio that may be false or eexagerrated in order to gain support for a political leader, a party etc",
     lastEdit: DateTime.now().toString(),
     color: "blue",
-    numberOfFlashcards: 20,
+    folderName: "Tiếng Anh",
   ),
 ];
 
@@ -56,19 +57,17 @@ class NotesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+      child: HideScrollbar(
         child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(kDefaultPadding),
           itemCount: notes.length,
           itemBuilder: (context, index) {
             if (index == 0) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: kDefaultPadding),
                   const Text(
-                    "Gần dây",
+                    "Gần đây",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: kBlack,

@@ -61,6 +61,7 @@ class App extends StatelessWidget {
   }
 }
 
+// unfocus the keyboard whenever user tap the screen
 class _Unfocus extends StatelessWidget {
   final Widget child;
   const _Unfocus({required this.child});

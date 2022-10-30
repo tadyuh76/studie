@@ -7,6 +7,7 @@ import 'package:studie/models/message.dart';
 import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
 import 'package:studie/services/db_methods.dart';
+import 'package:studie/widgets/hide_scrollbar.dart';
 import 'package:studie/widgets/message_box.dart';
 
 class ChatsPage extends ConsumerWidget {
@@ -42,9 +43,7 @@ class ChatsPage extends ConsumerWidget {
                         Message.fromJson(doc.data() as Map<String, dynamic>))
                     .toList();
 
-                return ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context)
-                      .copyWith(scrollbars: false),
+                return HideScrollbar(
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: kDefaultPadding),

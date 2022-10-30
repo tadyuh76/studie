@@ -132,10 +132,10 @@ class RootScreenState extends ConsumerState<RootScreen>
         ),
       ],
       title: const Text(
-        'Study247',
+        "Study247",
         style: TextStyle(
-          color: kTextColor,
           fontWeight: FontWeight.bold,
+          color: kBlack,
           fontSize: 24,
         ),
       ),

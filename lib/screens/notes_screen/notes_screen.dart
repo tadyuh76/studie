@@ -24,9 +24,9 @@ class _NotesScreenState extends State<NotesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kLightGrey,
+      backgroundColor: kWhite,
       appBar: AppBar(
-        backgroundColor: kLightGrey,
+        backgroundColor: kWhite,
         titleSpacing: 0,
         elevation: 0,
         title: Row(
@@ -47,8 +47,9 @@ class _NotesScreenState extends State<NotesScreen> {
               const SearchBar(
                 height: 50,
                 hintText: "Tìm kiếm ghi chú/flashcard",
-                color: kWhite,
+                color: kLightGrey,
               ),
+              const SizedBox(height: kMediumPadding),
               _tabIndex == 0 ? const NotesTab() : const FolderTab()
             ],
           )
