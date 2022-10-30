@@ -85,13 +85,13 @@ class BottomNav extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
-                        'assets/icons/alchemy.svg',
+                        'assets/icons/cards.svg',
                         width: 32,
                         height: 32,
                         color: currentIndex == 1 ? kPrimaryColor : kDarkGrey,
                       ),
                       Text(
-                        'Phòng thí nghiệm',
+                        'Balo',
                         style: TextStyle(
                           color: currentIndex == 1 ? kPrimaryColor : kDarkGrey,
                           fontSize: 10,

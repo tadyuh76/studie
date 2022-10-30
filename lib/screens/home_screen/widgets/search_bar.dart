@@ -7,7 +7,13 @@ import 'package:studie/constants/colors.dart';
 class SearchBar extends StatelessWidget {
   final double height;
   final String hintText;
-  const SearchBar({super.key, required this.height, required this.hintText});
+  final Color color;
+  const SearchBar({
+    super.key,
+    required this.height,
+    required this.hintText,
+    this.color = kLightGrey,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +22,7 @@ class SearchBar extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       decoration: BoxDecoration(
-        color: kLightGrey,
+        color: color,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -24,11 +30,7 @@ class SearchBar extends StatelessWidget {
         children: [
           Text(
             hintText,
-            style: const TextStyle(
-              // fontWeight: FontWeight.bold,
-              color: kDarkGrey,
-              fontSize: 14,
-            ),
+            style: const TextStyle(color: kDarkGrey, fontSize: 14),
           ),
           SvgPicture.asset('assets/icons/search.svg')
         ],

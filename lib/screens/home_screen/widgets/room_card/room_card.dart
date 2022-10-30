@@ -19,7 +19,7 @@ class RoomCard extends StatelessWidget {
         vertical: kMediumPadding,
       ),
       decoration: BoxDecoration(
-        color: kLightGrey,
+        color: kWhite,
         borderRadius: BorderRadius.circular(kDefaultPadding),
       ),
       child: Column(

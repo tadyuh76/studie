@@ -4,10 +4,10 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/providers/navigator_index_provider.dart';
 import 'package:studie/providers/user_provider.dart';
-import 'package:studie/screens/alchemy_screen/alchemy_screen.dart';
 import 'package:studie/screens/home_screen/home_screen.dart';
 import 'package:studie/screens/home_screen/widgets/custom_drawer.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
+import 'package:studie/screens/notes_screen/notes_screen.dart';
 import 'package:studie/widgets/avatar.dart';
 import 'package:studie/widgets/bottom_nav.dart';
 
@@ -92,7 +92,10 @@ class RootScreenState extends ConsumerState<RootScreen>
                     if (isMenuOpen) onMenuTap(MediaQuery.of(context).size);
                   },
                   child: Scaffold(
-                    appBar: renderAppBar(context),
+                    appBar: ref.watch(navigatorIndexProvider) == 0
+                        ? renderAppBar(context)
+                        : null,
+                    backgroundColor: kLightGrey,
                     bottomNavigationBar: const BottomNav(),
                     body: const _MainBody(),
                   ),
@@ -108,7 +111,7 @@ class RootScreenState extends ConsumerState<RootScreen>
 
     return AppBar(
       centerTitle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       elevation: 0,
       leading: Center(
         child: IconButton(
@@ -129,7 +132,7 @@ class RootScreenState extends ConsumerState<RootScreen>
         ),
       ],
       title: const Text(
-        'Studie',
+        'Study247',
         style: TextStyle(
           color: kTextColor,
           fontWeight: FontWeight.bold,
@@ -149,6 +152,6 @@ class _MainBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navigatorIndexProvider);
 
-    return currentIndex == 0 ? const HomeScreen() : const AlchemyScreen();
+    return currentIndex == 0 ? const HomeScreen() : const NotesScreen();
   }
 }

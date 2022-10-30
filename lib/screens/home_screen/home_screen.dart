@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studie/constants/breakpoints.dart';
+import 'package:studie/constants/colors.dart';
 import 'package:studie/screens/home_screen/widgets/progress_tracker.dart';
 import 'package:studie/screens/home_screen/widgets/rooms_section.dart';
 import 'package:studie/screens/home_screen/widgets/search_bar.dart';
@@ -17,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
           SizedBox(height: kMediumPadding),
-          SearchBar(height: 50, hintText: 'Tìm phòng học'),
+          SearchBar(height: 50, hintText: 'Tìm phòng học', color: kWhite),
           SizedBox(height: kDefaultPadding),
           ProgressTracker(),
           SizedBox(height: kDefaultPadding),

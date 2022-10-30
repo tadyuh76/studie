@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
 import 'package:studie/widgets/dialogs/breaktime_dialog.dart';
-import 'package:studie/widgets/dialogs/custom_dialog.dart';
 import 'package:studie/widgets/dialogs/return_from_breaktime.dart';
 
 const minute = 60;
