@@ -21,6 +21,9 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^20.3.49
   agora_rtc_engine: ^6.0.0
   lottie: ^1.4.3
+  file_picker: ^5.2.2
+  firebase_storage: ^10.3.11
+  photo_view: ^0.14.0
 
 dev_dependencies:
   flutter_test:

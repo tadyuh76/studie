@@ -59,17 +59,17 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state, [mounted = true]) {
-    if (state == AppLifecycleState.resumed && mounted) {
-      showSnackBar(
-        context,
-        "Đã rời khỏi phòng học do thoát ứng dụng đột ngột!",
-      );
-    }
-    if (state == AppLifecycleState.paused) {
-      ref.read(roomProvider).exitRoom(widget.room.id);
-      ref.read(pomodoroProvider).reset();
-      Navigator.of(context).pop();
-    }
+    // if (state == AppLifecycleState.resumed && mounted) {
+    //   showSnackBar(
+    //     context,
+    //     "Đã rời khỏi phòng học do thoát ứng dụng đột ngột!",
+    //   );
+    // }
+    // if (state == AppLifecycleState.paused) {
+    //   ref.read(roomProvider).exitRoom(widget.room.id);
+    //   ref.read(pomodoroProvider).reset();
+    //   Navigator.of(context).pop();
+    // }
   }
 
   void onTabTap(int index) {

@@ -196,6 +196,8 @@ class _State extends ConsumerState<CameraViewPage>
         bitrate: 0,
       ),
     );
+    await _engine.disableAudio();
+    await _engine.disableVideo();
     await _engine.startPreview();
     setState(() {
       _isReadyPreview = true;
