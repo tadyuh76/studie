@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/note.dart';
-import 'package:studie/screens/notes_screen/widgets/note_widget.dart';
+import 'package:studie/screens/document_screen/widgets/note_widget.dart';
 import 'package:studie/widgets/hide_scrollbar.dart';
 
 final notes = [
@@ -12,7 +12,7 @@ final notes = [
         "I. Khái niệm: Dao động điều hòa là dao động tuần hoàn mà phương trình trạng thái được biểu diễn dưới dạng các hàm điều hoà (sin hoặc cosin)",
     lastEdit: DateTime.now().toString(),
     id: "",
-    color: "blue",
+    color: "red",
     folderName: "Vật lý",
   ),
   Note(
@@ -21,7 +21,7 @@ final notes = [
     text:
         "Mã di truyền là trật tự các nucleotit trên gen quy định trật tự các axit amin trên protein",
     lastEdit: DateTime.now().toString(),
-    color: "black",
+    color: "green",
     folderName: "Sinh học",
   ),
   Note(
@@ -59,6 +59,7 @@ class NotesTab extends StatelessWidget {
     return Expanded(
       child: HideScrollbar(
         child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(kDefaultPadding),
           itemCount: notes.length,
           itemBuilder: (context, index) {

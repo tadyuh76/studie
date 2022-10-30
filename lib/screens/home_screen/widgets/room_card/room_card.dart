@@ -19,9 +19,9 @@ class RoomCard extends StatelessWidget {
         vertical: kMediumPadding,
       ),
       decoration: BoxDecoration(
-        color: kWhite,
-        borderRadius: BorderRadius.circular(kDefaultPadding),
-      ),
+          color: kWhite,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [BoxShadow(blurRadius: 4, color: kShadow)]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,10 +47,7 @@ class RoomCard extends StatelessWidget {
                 Text(
                   room.description,
                   maxLines: 3,
-                  style: const TextStyle(
-                    color: kTextColor,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: kTextColor, fontSize: 16),
                 ),
                 const SizedBox(height: kMediumPadding),
                 EnterButton(room: room),
@@ -82,12 +79,6 @@ class RoomCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             color: room.color,
-            // image: DecorationImage(
-            //   image: AssetImage(
-            //     'assets/images/${Random().nextInt(5) + 1}.png',
-            //   ),
-            //   fit: BoxFit.cover,
-            // ),
           ),
           child: Text(
             room.name,

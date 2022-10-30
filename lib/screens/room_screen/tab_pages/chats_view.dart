@@ -24,7 +24,7 @@ class ChatsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = ref.read(roomProvider).room.id;
+    final roomId = ref.read(roomProvider).room!.id;
 
     return Scaffold(
       body: LayoutBuilder(builder: (context, constraints) {

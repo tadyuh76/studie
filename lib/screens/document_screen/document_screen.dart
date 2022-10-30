@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
+import 'package:studie/screens/document_screen/tabs/folder_tab.dart';
+import 'package:studie/screens/document_screen/tabs/notes_tab.dart';
 import 'package:studie/screens/home_screen/widgets/search_bar.dart';
-import 'package:studie/screens/notes_screen/tabs/folder_tab.dart';
-import 'package:studie/screens/notes_screen/tabs/notes_tab.dart';
 
-class NotesScreen extends StatefulWidget {
-  const NotesScreen({super.key});
+class DocumentScreen extends StatefulWidget {
+  const DocumentScreen({super.key});
 
   @override
-  State<NotesScreen> createState() => _NotesScreenState();
+  State<DocumentScreen> createState() => _DocumentScreenState();
 }
 
-class _NotesScreenState extends State<NotesScreen> {
+class _DocumentScreenState extends State<DocumentScreen> {
   final _pageController = PageController();
   int _tabIndex = 0;
 
@@ -26,18 +26,25 @@ class _NotesScreenState extends State<NotesScreen> {
     return Scaffold(
       backgroundColor: kWhite,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: kWhite,
         titleSpacing: 0,
         elevation: 0,
+        centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             renderTabTitle(title: "Ghi chú", index: 0),
-            const SizedBox(width: kMediumPadding),
+            const SizedBox(width: kDefaultPadding * 2),
             renderTabTitle(title: "Thư mục", index: 1),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: kPrimaryColor,
+        child: const Icon(Icons.add),
       ),
       body: PageView(
         controller: _pageController,
@@ -60,11 +67,14 @@ class _NotesScreenState extends State<NotesScreen> {
 
   Widget renderTabTitle({required String title, required int index}) {
     final active = _tabIndex == index;
+    final icon = index == 0 ? "notes" : "folder";
 
     return GestureDetector(
       onTap: () => switchTab(index),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(
             title,
@@ -74,12 +84,20 @@ class _NotesScreenState extends State<NotesScreen> {
               fontSize: 20,
             ),
           ),
-          if (active)
-            const Icon(
+          // SvgPicture.asset(
+          //   "assets/icons/$icon.svg",
+          //   color: active ? kPrimaryColor : kDarkGrey,
+          //   width: 32,
+          //   height: 32,
+          // ),
+          Opacity(
+            opacity: active ? 1 : 0,
+            child: const Icon(
               Icons.expand_more_rounded,
               color: kPrimaryColor,
               size: 20,
             ),
+          ),
         ],
       ),
     );

@@ -6,7 +6,7 @@ import 'package:studie/services/db_methods.dart';
 class RoomNotifier extends ChangeNotifier {
   Room? _room;
 
-  Room get room => _room!;
+  Room? get room => _room;
 
   void changeRoom(Room newRoom) {
     _room = newRoom;

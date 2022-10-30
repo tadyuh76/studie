@@ -69,10 +69,9 @@ class PomodoroNotifier extends ChangeNotifier {
   }
 
   void startTimer(BuildContext context) {
-    if (_isStudying) return;
+    if (_isStudying || _isBreaktime) return;
 
     _isStudying = true;
-    _isBreaktime = false;
 
     _studyTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _remainTime--;
@@ -105,7 +104,6 @@ class PomodoroNotifier extends ChangeNotifier {
   void startBreaktime() {
     if (_isBreaktime) return;
 
-    _isStudying = false;
     _isBreaktime = true;
 
     _breaktimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {

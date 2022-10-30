@@ -124,7 +124,7 @@ class _State extends ConsumerState<CameraViewPage>
   void initState() {
     super.initState();
     _user = ref.read(userProvider).user;
-    _room = ref.read(roomProvider).room;
+    _room = ref.read(roomProvider).room!;
 
     _initEngine();
   }

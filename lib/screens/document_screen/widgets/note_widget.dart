@@ -1,15 +1,16 @@
 import "package:flutter/material.dart";
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:studie/constants/banner_colors.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/note.dart';
 import 'package:studie/screens/note_edit_screen/note_edit_screen.dart';
 
-class NoteWidget extends StatelessWidget {
+class NoteWidget extends ConsumerWidget {
   final Note note;
   const NoteWidget({super.key, required this.note});
 
-  void onNoteTab(BuildContext context) {
+  void onNoteTab(BuildContext context, WidgetRef ref) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NoteEditScreen(note: note),
@@ -18,7 +19,7 @@ class NoteWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(top: kMediumPadding),
       child: Material(
@@ -26,7 +27,7 @@ class NoteWidget extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         clipBehavior: Clip.hardEdge,
         child: InkWell(
-          onTap: () => onNoteTab(context),
+          onTap: () => onNoteTab(context, ref),
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: kMediumPadding,

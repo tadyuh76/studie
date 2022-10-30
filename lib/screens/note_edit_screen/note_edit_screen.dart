@@ -59,11 +59,20 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
           width: kIconSize,
         ),
       ),
+      // IconButton(
+      //   splashRadius: kIconSize,
+      //   onPressed: () {},
+      //   icon: SvgPicture.asset(
+      //     "assets/icons/popup_menu.svg",
+      //     width: kIconSize,
+      //     height: kIconSize,
+      //   ),
+      // ),
       IconButton(
         splashRadius: kIconSize,
         onPressed: () {},
         icon: SvgPicture.asset(
-          "assets/icons/popup_menu.svg",
+          "assets/icons/cards.svg",
           width: kIconSize,
           height: kIconSize,
         ),

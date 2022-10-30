@@ -6,7 +6,7 @@ import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/providers/pomodoro_provider.dart';
 import 'package:studie/providers/room_provider.dart';
-import 'package:studie/screens/notes_screen/notes_screen.dart';
+import 'package:studie/screens/document_screen/document_screen.dart';
 import 'package:studie/screens/room_screen/tab_pages/camera_view.dart';
 import 'package:studie/screens/room_screen/tab_pages/chats_view.dart';
 import 'package:studie/screens/room_screen/tab_pages/file_view.dart';
@@ -21,7 +21,7 @@ final Map<String, Widget> tabs = {
   "camera": const CameraViewPage(),
   "image": const FileViewPage(),
   "chats": ChatsPage(),
-  "notes": const NotesScreen(),
+  "notes": const DocumentScreen(),
 };
 
 final globalKey = GlobalKey();

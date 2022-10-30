@@ -11,12 +11,12 @@ import 'package:studie/widgets/auth/auth_text_button.dart';
 class PomodoroWidget extends ConsumerWidget {
   const PomodoroWidget({super.key});
 
-  void _showPomodoroBox(BuildContext context, bool isStudying) {
+  void _showPomodoroBox(BuildContext context, bool isBreaktime) {
     showDialog(
       context: context,
       barrierDismissible: true,
       barrierColor: Colors.transparent,
-      builder: (context) => _PomodoroBox(isStudying),
+      builder: (context) => _PomodoroBox(isBreaktime),
     );
   }
 
@@ -24,25 +24,26 @@ class PomodoroWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pomodoro = ref.watch(pomodoroProvider);
     final isStudying = pomodoro.isStudying;
+    final isBreaktime = pomodoro.isBreaktime;
     final remainTime =
-        isStudying ? pomodoro.remainTime : pomodoro.remainBreaktime;
+        isBreaktime ? pomodoro.remainBreaktime : pomodoro.remainTime;
 
     return UtilityTab(
       icon: 'clock',
-      title: isStudying ? "Pomodoro" : 'Giải lao',
+      title: isBreaktime ? 'Giải lao' : "Pomodoro",
       value: formatTime(remainTime),
-      onTap: () => _showPomodoroBox(context, isStudying),
+      onTap: () => _showPomodoroBox(context, isBreaktime),
     );
   }
 }
 
 class _PomodoroBox extends StatelessWidget {
-  final bool isStudying;
-  const _PomodoroBox(this.isStudying);
+  final bool isBreaktime;
+  const _PomodoroBox(this.isBreaktime);
 
   @override
   Widget build(BuildContext context) {
-    if (!isStudying) return const SizedBox.shrink();
+    if (isBreaktime) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.only(

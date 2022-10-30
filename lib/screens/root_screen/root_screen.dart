@@ -7,7 +7,7 @@ import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/home_screen/home_screen.dart';
 import 'package:studie/screens/home_screen/widgets/custom_drawer.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
-import 'package:studie/screens/notes_screen/notes_screen.dart';
+import 'package:studie/screens/document_screen/document_screen.dart';
 import 'package:studie/widgets/avatar.dart';
 import 'package:studie/widgets/bottom_nav.dart';
 
@@ -95,7 +95,7 @@ class RootScreenState extends ConsumerState<RootScreen>
                     appBar: ref.watch(navigatorIndexProvider) == 0
                         ? renderAppBar(context)
                         : null,
-                    backgroundColor: kLightGrey,
+                    backgroundColor: kWhite,
                     bottomNavigationBar: const BottomNav(),
                     body: const _MainBody(),
                   ),
@@ -152,6 +152,6 @@ class _MainBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navigatorIndexProvider);
 
-    return currentIndex == 0 ? const HomeScreen() : const NotesScreen();
+    return currentIndex == 0 ? const HomeScreen() : const DocumentScreen();
   }
 }

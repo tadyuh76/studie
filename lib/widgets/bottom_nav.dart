@@ -91,7 +91,7 @@ class BottomNav extends ConsumerWidget {
                         color: currentIndex == 1 ? kPrimaryColor : kDarkGrey,
                       ),
                       Text(
-                        'Balo',
+                        'Tài liệu',
                         style: TextStyle(
                           color: currentIndex == 1 ? kPrimaryColor : kDarkGrey,
                           fontSize: 10,
