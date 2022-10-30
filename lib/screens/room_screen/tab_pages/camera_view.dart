@@ -27,7 +27,7 @@
 //       agoraConnectionData: AgoraConnectionData(
 //         appId: appId,
 //         tempToken: tempToken,
-//         channelName: "tadyuh",
+//         channelName: channelName,
 //         username: _user.username,
 //       ),
 //     );
@@ -97,7 +97,8 @@ import 'package:studie/providers/room_settings_provider.dart';
 import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
 
-/// MultiChannel Example
+const channelName = "tadyuh";
+
 class CameraViewPage extends ConsumerStatefulWidget {
   const CameraViewPage({Key? key}) : super(key: key);
 
@@ -207,7 +208,7 @@ class _State extends ConsumerState<CameraViewPage>
   Future<void> _joinChannel() async {
     await _engine.joinChannel(
       token: tempToken,
-      channelId: "tadyuh",
+      channelId: channelName,
       uid: 0,
       options: ChannelMediaOptions(
         channelProfile: ChannelProfileType.channelProfileCommunication,
@@ -279,7 +280,7 @@ class _State extends ConsumerState<CameraViewPage>
                                 rtcEngine: _engine,
                                 canvas: VideoCanvas(uid: e),
                                 connection:
-                                    const RtcConnection(channelId: "tadyuh"),
+                                    const RtcConnection(channelId: channelName),
                               ),
                             ),
                           ),

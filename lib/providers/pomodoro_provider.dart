@@ -82,7 +82,9 @@ class PomodoroNotifier extends ChangeNotifier {
       if (_remainTime == 0) {
         timer.cancel();
         _isStudying = false;
+        _remainSessions--;
 
+        setupBreaktimeTimer();
         showCustomDialog(
           context: globalKey.currentState!.context,
           dialog: const BreaktimeDialog(),
@@ -93,25 +95,26 @@ class PomodoroNotifier extends ChangeNotifier {
     });
   }
 
-  void startBreaktime() {
-    if (_isBreaktime) return;
-
-    _isStudying = false;
-    _isBreaktime = true;
-
+  void setupBreaktimeTimer() {
     final numSessionsCompleted = _totalSessions - _remainSessions;
     final isLongBreak = numSessionsCompleted % 3 == 0;
     _remainBreaktime = (numSessionsCompleted > 0 && isLongBreak)
         ? _longbreakDuration
         : _breaktimeDuration;
     notifyListeners();
+  }
+
+  void startBreaktime() {
+    if (_isBreaktime) return;
+
+    _isStudying = false;
+    _isBreaktime = true;
 
     _breaktimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _remainBreaktime--;
       if (_remainBreaktime == 0) {
         timer.cancel();
         _isBreaktime = false;
-        _remainSessions--;
 
         showCustomDialog(
           context: globalKey.currentState!.context,

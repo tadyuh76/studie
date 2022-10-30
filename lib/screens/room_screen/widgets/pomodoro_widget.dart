@@ -42,7 +42,7 @@ class _PomodoroBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // if (!isStudying) return const SizedBox.shrink();
+    if (!isStudying) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.only(
