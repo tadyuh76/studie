@@ -21,7 +21,7 @@ class RoomTags extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
-                  color: Colors.white,
+                  color: kLightGrey,
                 ),
                 child: Text(
                   tag,

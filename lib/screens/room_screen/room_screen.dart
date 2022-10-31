@@ -14,7 +14,6 @@ import 'package:studie/screens/room_screen/widgets/app_bar.dart';
 import 'package:studie/screens/room_screen/widgets/pomodoro_widget.dart';
 import 'package:studie/screens/room_screen/widgets/study_session.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
-import 'package:studie/utils/show_snack_bar.dart';
 import 'package:studie/widgets/dialogs/leave_dialog.dart';
 
 final Map<String, Widget> tabs = {
@@ -46,7 +45,7 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
     WidgetsBinding.instance.addObserver(this);
 
     final pomodoro = ref.read(pomodoroProvider);
-    pomodoro.initTimer("pomodoro_test");
+    pomodoro.initTimer("pomodoro_50");
     pomodoro.startTimer(context);
   }
 

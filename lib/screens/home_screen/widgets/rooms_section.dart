@@ -10,12 +10,12 @@ import 'package:studie/services/db_methods.dart';
 class RoomsSection extends StatelessWidget {
   const RoomsSection({super.key});
 
-  Widget renderTitle() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
+  Widget renderTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       child: Text(
-        'Phòng học chung',
-        style: TextStyle(
+        title,
+        style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: kBlack,
@@ -39,11 +39,13 @@ class RoomsSection extends StatelessWidget {
           return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: rooms.length + 1,
+            itemCount: rooms.length + 2,
             itemBuilder: (context, index) {
-              if (index == 0) return renderTitle();
+              if (index == 0) return renderTitle("Phòng học 247");
+              if (index <= 3) return RoomCard(room: rooms[index - 1]);
+              if (index == 4) return renderTitle("Phòng học chung");
 
-              return RoomCard(room: rooms[index - 1]);
+              return RoomCard(room: rooms[index - 2]);
             },
           );
         }

@@ -54,6 +54,7 @@ class _FileViewPageState extends ConsumerState<FileViewPage>
       final fileUrl = await res.ref.getDownloadURL();
       print("put file successfully");
       _fileUrl = fileUrl;
+      // TODO: handle online pdf sharing
     } catch (e) {
       print("error putting file on storage: $e");
     }
@@ -61,6 +62,14 @@ class _FileViewPageState extends ConsumerState<FileViewPage>
     setState(() {
       _filePicked = fileBytes;
       _fileType = file.extension;
+      loading = false;
+    });
+  }
+
+  void _resetFile() {
+    setState(() {
+      _filePicked = null;
+      _fileType = null;
       loading = false;
     });
   }
@@ -89,11 +98,30 @@ class _FileViewPageState extends ConsumerState<FileViewPage>
           padding: const EdgeInsets.only(top: kDefaultPadding),
           child: Opacity(
             opacity: 0.8,
-            child: FloatingActionButton(
-              onPressed: _pickFile,
-              backgroundColor: kPrimaryColor,
-              child:
-                  SvgPicture.asset("assets/icons/file_add.svg", color: kWhite),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FloatingActionButton(
+                  tooltip: "Làm mới",
+                  onPressed: _resetFile,
+                  backgroundColor: kPrimaryColor,
+                  child: const Icon(
+                    Icons.close,
+                    color: kWhite,
+                    size: kIconSize,
+                  ),
+                ),
+                const SizedBox(height: kMediumPadding),
+                FloatingActionButton(
+                  tooltip: "Thêm ảnh/tệp khác",
+                  onPressed: _pickFile,
+                  backgroundColor: kPrimaryColor,
+                  child: SvgPicture.asset(
+                    "assets/icons/file_add.svg",
+                    color: kWhite,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

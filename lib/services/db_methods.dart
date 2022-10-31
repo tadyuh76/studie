@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:studie/constants/default_values.dart';
+import 'package:studie/models/flashcard.dart';
 import 'package:studie/models/message.dart';
+import 'package:studie/models/note.dart';
 import 'package:studie/models/room.dart';
 import 'package:studie/models/user.dart';
 import 'package:studie/services/auth_methods.dart';
@@ -19,6 +21,17 @@ class DBMethods {
         .orderBy("createdAt", descending: true)
         .snapshots();
 
+    return snapshots;
+  }
+
+  Stream<QuerySnapshot> getNotes() {
+    final userId = _authMethods.user!.uid;
+    final snapshots = _db
+        .collection("users")
+        .doc(userId)
+        .collection("notes")
+        .orderBy("lastEdit", descending: true)
+        .snapshots();
     return snapshots;
   }
 
@@ -63,15 +76,18 @@ class DBMethods {
   }
 
   Stream<QuerySnapshot> getRooms() {
-    return _db.collection('rooms').snapshots();
+    return _db
+        .collection('rooms')
+        .orderBy("maxParticipants", descending: true)
+        .snapshots();
   }
 
   Future<bool> createRoom(Room room) async {
     bool created = true;
     try {
-      final ref = await _db.collection('rooms').add(room.toJson());
-      room.id = ref.id;
-      ref.update({"id": ref.id});
+      final docRef = await _db.collection('rooms').add(room.toJson());
+      room.copyWith(docRef.id);
+      docRef.update({"id": docRef.id});
 
       debugPrint('room created!');
     } catch (e) {
@@ -124,5 +140,68 @@ class DBMethods {
     } catch (e) {
       debugPrint('error leaving room: $e');
     }
+  }
+
+  Future<String> putNoteToDB(Note note) async {
+    String res = "success";
+
+    try {
+      final userId = _authMethods.user!.uid;
+      final ref = _db.collection("users").doc(userId).collection("notes");
+      final docRef = await ref.add(note.toJson());
+      note.copyWith(newId: docRef.id);
+    } catch (e) {
+      res = "Lỗi tạo ghi chú mới";
+    }
+
+    return res;
+  }
+
+  Future<String> updateNote(String noteId, Note newNote) async {
+    String res = "success";
+
+    try {
+      final userId = _authMethods.user!.uid;
+      final ref =
+          _db.collection("users").doc(userId).collection("notes").doc(noteId);
+      await ref.set(newNote.toJson());
+    } catch (e) {
+      res = e.toString();
+    }
+
+    return res;
+  }
+
+  Future<void> deleteAllFlashcards(String noteId) async {
+    try {
+      final userId = _authMethods.user!.uid;
+      final noteRef =
+          _db.collection("users").doc(userId).collection("notes").doc(noteId);
+      final flashcardsRef = noteRef.collection("flashcards");
+      final flashcards = await flashcardsRef.get();
+      for (final card in flashcards.docs) {
+        print("id: ${card.id} deleted.");
+        await flashcardsRef.doc(card.id).delete();
+      }
+    } catch (e) {
+      debugPrint("error delete the flashcards: $e");
+    }
+  }
+
+  Future<String> putFlashcardToNote(String noteId, Flashcard flashcard) async {
+    String res = "success";
+    try {
+      final userId = _authMethods.user!.uid;
+      final noteRef =
+          _db.collection("users").doc(userId).collection("notes").doc(noteId);
+
+      final docRef =
+          await noteRef.collection("flashcards").add(flashcard.toJson());
+      flashcard.copyWith(docRef.id);
+      docRef.update({"id": docRef.id});
+    } catch (e) {
+      res = e.toString();
+    }
+    return res;
   }
 }

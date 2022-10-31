@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:studie/constants/banner_colors.dart';
 
 class Room {
-  String id = '';
+  String _id = '';
   final String name;
   final String bannerColor;
   final String description;
@@ -14,7 +14,6 @@ class Room {
   final String hostUid;
 
   Room({
-    this.id = '',
     required this.hostUid,
     required this.name,
     required this.bannerColor,
@@ -26,11 +25,12 @@ class Room {
     required this.hostPhotoUrl,
   });
 
+  String get id => _id;
   Color get color => bannerColors[bannerColor]!;
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
+      "id": _id,
       "name": name,
       "bannerColor": bannerColor,
       "description": description,
@@ -44,8 +44,7 @@ class Room {
   }
 
   factory Room.fromJson(Map<String, dynamic> json) {
-    return Room(
-      id: json['id'],
+    final room = Room(
       name: json['name'],
       bannerColor: json['bannerColor'],
       description: json['description'],
@@ -56,5 +55,12 @@ class Room {
       hostUid: json['hostUid'],
       hostPhotoUrl: json['hostPhotoUrl'],
     );
+    room._id = json["id"];
+    return room;
+  }
+
+  Room copyWith(String id) {
+    _id = id;
+    return this;
   }
 }

@@ -47,7 +47,7 @@ class RoomCard extends StatelessWidget {
                 Text(
                   room.description,
                   maxLines: 3,
-                  style: const TextStyle(color: kTextColor, fontSize: 16),
+                  style: const TextStyle(color: kTextColor, fontSize: 14),
                 ),
                 const SizedBox(height: kMediumPadding),
                 EnterButton(room: room),

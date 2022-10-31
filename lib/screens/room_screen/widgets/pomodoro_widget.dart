@@ -23,7 +23,6 @@ class PomodoroWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pomodoro = ref.watch(pomodoroProvider);
-    final isStudying = pomodoro.isStudying;
     final isBreaktime = pomodoro.isBreaktime;
     final remainTime =
         isBreaktime ? pomodoro.remainBreaktime : pomodoro.remainTime;

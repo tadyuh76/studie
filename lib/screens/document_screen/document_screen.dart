@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
+import 'package:studie/models/note.dart';
 import 'package:studie/screens/document_screen/tabs/folder_tab.dart';
 import 'package:studie/screens/document_screen/tabs/notes_tab.dart';
 import 'package:studie/screens/home_screen/widgets/search_bar.dart';
+import 'package:studie/screens/note_edit_screen/note_edit_screen.dart';
+import 'package:studie/services/db_methods.dart';
+import 'package:studie/utils/show_snack_bar.dart';
 
 class DocumentScreen extends StatefulWidget {
   const DocumentScreen({super.key});
@@ -16,9 +20,23 @@ class _DocumentScreenState extends State<DocumentScreen> {
   final _pageController = PageController();
   int _tabIndex = 0;
 
-  void switchTab(int tabIndex) {
+  void _switchTab(int tabIndex) {
     _tabIndex = tabIndex;
     setState(() {});
+  }
+
+  void _createNewNote(BuildContext context, [mounted = true]) async {
+    final newNote = Note.empty();
+    final res = await DBMethods().putNoteToDB(newNote);
+    if (mounted) {
+      if (res != "success") {
+        return showSnackBar(context, res);
+      }
+
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => NoteEditScreen(note: newNote)),
+      );
+    }
   }
 
   @override
@@ -42,7 +60,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => _createNewNote(context),
         backgroundColor: kPrimaryColor,
         child: const Icon(Icons.add),
       ),
@@ -67,10 +85,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   Widget renderTabTitle({required String title, required int index}) {
     final active = _tabIndex == index;
-    final icon = index == 0 ? "notes" : "folder";
 
     return GestureDetector(
-      onTap: () => switchTab(index),
+      onTap: () => _switchTab(index),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -84,12 +101,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
               fontSize: 20,
             ),
           ),
-          // SvgPicture.asset(
-          //   "assets/icons/$icon.svg",
-          //   color: active ? kPrimaryColor : kDarkGrey,
-          //   width: 32,
-          //   height: 32,
-          // ),
           Opacity(
             opacity: active ? 1 : 0,
             child: const Icon(

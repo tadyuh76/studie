@@ -25,9 +25,8 @@ class CreateRoomInput extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: const TextStyle(
-              color: kLightGrey,
-              fontSize: 12,
-              height: 1,
+              color: kGrey,
+              fontSize: 14,
             ),
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(

@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
+import 'package:studie/models/flashcard.dart';
 import 'package:studie/models/note.dart';
+import 'package:studie/services/db_methods.dart';
+import 'package:studie/utils/show_custom_dialogs.dart';
+import 'package:studie/utils/show_snack_bar.dart';
+import 'package:studie/widgets/auth/auth_text_button.dart';
+import 'package:studie/widgets/dialogs/custom_dialog.dart';
+
+const flashcardIdentifier = ">> ";
 
 class NoteEditScreen extends StatefulWidget {
   static const routeName = "/note_edit";
@@ -15,8 +23,11 @@ class NoteEditScreen extends StatefulWidget {
 }
 
 class _NoteEditScreenState extends State<NoteEditScreen> {
+  final _dbMethods = DBMethods();
   final _titleController = TextEditingController();
   final _documentController = _DocCustomController();
+  int flashcardsCreated = 0;
+  bool saved = true;
 
   @override
   void initState() {
@@ -33,7 +44,11 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
   }
 
   void _onTitleChanged(String newTitle) {
-    widget.note.copyWith(newTitle: newTitle);
+    final previousSelection = _titleController.selection;
+    _titleController.text = newTitle;
+    _titleController.selection = previousSelection;
+
+    if (saved) setState(() => saved = false);
   }
 
   void _onDocumentChanged(String text) {
@@ -41,11 +56,113 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     _documentController.text = text;
     _documentController.selection = previousSelection;
 
-    widget.note.copyWith(newText: text);
+    if (saved) setState(() => saved = false);
   }
 
-  void _onEditCompleted() {
-    // TODO: update the new note to database
+  void _onSaved() async {
+    _dismissKeyboard();
+    final doc = _documentController.text;
+    widget.note.copyWith(newTitle: _titleController.text, newText: doc);
+
+    await _dbMethods.updateNote(widget.note.id, widget.note);
+    await _dbMethods.deleteAllFlashcards(widget.note.id);
+
+    flashcardsCreated = 0;
+    doc.split("\n").forEach((line) {
+      if (line.contains(flashcardIdentifier)) {
+        final sides = line.split(flashcardIdentifier);
+        _createFlashcard(sides[0], sides[1]);
+        flashcardsCreated++;
+      }
+    });
+
+    setState(() => saved = true);
+  }
+
+  // void _onEditingCompleted() {
+  //   final doc = _documentController.text;
+  //   final note =
+  //       widget.note.copyWith(newTitle: _titleController.text, newText: doc);
+
+  //   DBMethods().updateNote(widget.note.id, widget.note);
+  //   doc.split("\n").forEach((line) {
+  //     if (line.contains(flashcardIdentifier)) {
+  //       final sides = line.split(flashcardIdentifier);
+  //       _createFlashcard(sides[0], sides[1]);
+  //       flashcardsCreated++;
+  //     }
+  //   });
+
+  //   setState(() {});
+  // }
+
+  void _createFlashcard(String front, String back) async {
+    final Flashcard flashcard = Flashcard(
+      front: front,
+      back: back,
+      revisedTimes: 0,
+    );
+
+    final res = await DBMethods().putFlashcardToNote(widget.note.id, flashcard);
+    if (mounted && res != "success") {
+      showSnackBar(context, "Lỗi tải flashcard: $res");
+    }
+  }
+
+  Widget _renderFlashcardsBadge() {
+    return Positioned(
+      top: 10,
+      right: 0,
+      child: Container(
+        width: 16,
+        height: 16,
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          color: kPrimaryColor,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        child: Text(
+          "$flashcardsCreated",
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: kWhite,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _onExit() async {
+    _dismissKeyboard();
+    if (saved) return true;
+
+    showCustomDialog(
+      context: context,
+      dialog: CustomDialog(
+        title: "Thoát chỉnh sửa",
+        child: Column(
+          children: [
+            const Text(
+              "Bạn có thay đổi chưa được lưu. Lưu chúng ?",
+              style: TextStyle(color: kBlack, fontSize: 16),
+            ),
+            const SizedBox(height: kDefaultPadding),
+            CustomTextButton(
+              text: "Lưu và thoát",
+              primary: true,
+              onTap: () {
+                _onSaved();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return false;
   }
 
   _renderDefaultLeading() {
@@ -59,22 +176,28 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
           width: kIconSize,
         ),
       ),
-      // IconButton(
-      //   splashRadius: kIconSize,
-      //   onPressed: () {},
-      //   icon: SvgPicture.asset(
-      //     "assets/icons/popup_menu.svg",
-      //     width: kIconSize,
-      //     height: kIconSize,
-      //   ),
-      // ),
-      IconButton(
-        splashRadius: kIconSize,
-        onPressed: () {},
-        icon: SvgPicture.asset(
-          "assets/icons/cards.svg",
-          width: kIconSize,
-          height: kIconSize,
+      Padding(
+        padding:
+            const EdgeInsets.only(right: kDefaultPadding, left: kSmallPadding),
+        child: Material(
+          color: Colors.transparent,
+          child: GestureDetector(
+            onTap: () {},
+            child: SizedBox(
+              width: kIconSize + 10,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/cards.svg",
+                    width: kIconSize,
+                    height: kIconSize,
+                  ),
+                  if (flashcardsCreated != 0) _renderFlashcardsBadge()
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     ];
@@ -92,12 +215,11 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
         onPressed: () {},
         icon: const Icon(Icons.redo, color: kDarkGrey, size: kIconSize),
       ),
-      IconButton(
-        splashRadius: kIconSize,
-        onPressed: () {},
-        icon: const Icon(Icons.check, color: kPrimaryColor, size: kIconSize),
-      ),
     ];
+  }
+
+  void _dismissKeyboard() {
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
   @override
@@ -108,58 +230,74 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     final lastEditHour =
         "${lastEditTime.hour.toString().padLeft(2, "0")}:${lastEditTime.minute.toString().padLeft(2, "0")}";
 
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        backgroundColor: kWhite,
-        elevation: 0,
-        foregroundColor: kBlack,
-        actions: [
-          if (MediaQuery.of(context).viewInsets.bottom > 0.0)
-            ..._renderActiveLeading()
-          else
-            ..._renderDefaultLeading()
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                maxLines: 1,
-                controller: _titleController,
-                onChanged: _onTitleChanged,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: kBlack,
-                  fontSize: 20,
-                ),
-                decoration: const InputDecoration(
-                  hintText: "Nhập tiêu đề...",
-                  hintStyle: TextStyle(color: kGrey),
-                  border: InputBorder.none,
+    return GestureDetector(
+      onTap: _dismissKeyboard,
+      child: Scaffold(
+        appBar: AppBar(
+          titleSpacing: 0,
+          backgroundColor: kWhite,
+          elevation: 0,
+          foregroundColor: kBlack,
+          actions: [
+            if (MediaQuery.of(context).viewInsets.bottom > 0.0)
+              ..._renderActiveLeading()
+            else
+              ..._renderDefaultLeading(),
+            if (!saved)
+              IconButton(
+                splashRadius: kIconSize,
+                onPressed: _onSaved,
+                icon: const Icon(
+                  Icons.check,
+                  color: kPrimaryColor,
+                  size: kIconSize,
                 ),
               ),
-              // const SizedBox(height: kDefaultPadding),
-              Text(
-                "$lastEditHour - $lastEditDay",
-                style: const TextStyle(fontSize: 14, color: kGrey),
+          ],
+        ),
+        body: WillPopScope(
+          onWillPop: _onExit,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    maxLines: null,
+                    controller: _titleController,
+                    onChanged: _onTitleChanged,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: kBlack,
+                      fontSize: 20,
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: "Nhập tiêu đề...",
+                      hintStyle: TextStyle(color: kGrey),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                  // const SizedBox(height: kDefaultPadding),
+                  Text(
+                    "$lastEditHour - $lastEditDay",
+                    style: const TextStyle(fontSize: 14, color: kGrey),
+                  ),
+                  TextField(
+                    controller: _documentController,
+                    maxLines: null,
+                    onChanged: _onDocumentChanged,
+                    cursorColor: kPrimaryColor,
+                    decoration: const InputDecoration(border: InputBorder.none),
+                    style: const TextStyle(
+                      height: 1.5,
+                      color: kBlack,
+                      fontSize: 16,
+                    ),
+                  )
+                ],
               ),
-              TextField(
-                controller: _documentController,
-                maxLines: null,
-                onChanged: _onDocumentChanged,
-                cursorColor: kPrimaryColor,
-                decoration: const InputDecoration(border: InputBorder.none),
-                style: const TextStyle(
-                  height: 1.5,
-                  color: kBlack,
-                  fontSize: 16,
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),

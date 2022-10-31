@@ -33,8 +33,32 @@ class ChatsPage extends ConsumerWidget {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data!.docs.isEmpty) {
-                  return const Text(
-                    "Trò chuyện, trao đổi về bài học tại đây !",
+                  return Expanded(
+                    child: SingleChildScrollView(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(kDefaultPadding),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AspectRatio(
+                                aspectRatio: 1,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child:
+                                      SvgPicture.asset("assets/svgs/chats.svg"),
+                                ),
+                              ),
+                              const Text(
+                                "Trò chuyện, trao đổi về bài học tại đây !",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: kBlack, fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   );
                 }
 

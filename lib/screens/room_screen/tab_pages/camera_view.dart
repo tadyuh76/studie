@@ -86,6 +86,7 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:studie/constants/agora.dart';
 import 'package:studie/constants/breakpoints.dart';
@@ -96,6 +97,8 @@ import 'package:studie/providers/room_provider.dart';
 import 'package:studie/providers/room_settings_provider.dart';
 import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
+import 'package:studie/utils/show_snack_bar.dart';
+import 'package:studie/widgets/auth/auth_text_button.dart';
 
 const channelName = "tadyuh";
 
@@ -112,7 +115,7 @@ class _State extends ConsumerState<CameraViewPage>
   late final UserModel _user;
   late final Room _room;
 
-  bool _isReadyPreview = false;
+  bool _isReadyPreview = false, _permissionsGranted = true;
 
   bool isJoined = false, switchCamera = true, switchRender = true;
   Set<int> remoteUid = {};
@@ -148,7 +151,17 @@ class _State extends ConsumerState<CameraViewPage>
   }
 
   Future<void> _initEngine() async {
-    await [Permission.camera, Permission.microphone].request();
+    final status = await [Permission.camera, Permission.microphone].request();
+    status.forEach((key, value) {
+      if (value != PermissionStatus.granted) {
+        showSnackBar(
+          context,
+          "Không thể tham gia cuộc gọi khi ứng dụng không có quyền truy cập.",
+        );
+        _permissionsGranted = false;
+        return setState(() {});
+      }
+    });
 
     await _engine.initialize(const RtcEngineContext(appId: appId));
     await _engine.leaveChannel();
@@ -253,6 +266,37 @@ class _State extends ConsumerState<CameraViewPage>
   Widget build(BuildContext context) {
     super.build(context);
     final roomSettings = ref.watch(roomSettingsProvider);
+
+    if (!_permissionsGranted) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(kDefaultPadding),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: SvgPicture.asset("assets/svgs/warning.svg"),
+                ),
+              ),
+              const Text(
+                "Không thể truy cập quyền...",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: kBlack, fontSize: 16),
+              ),
+              const SizedBox(height: kDefaultPadding),
+              CustomTextButton(
+                text: "Thử lại",
+                onTap: _initEngine,
+                primary: true,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return !_isReadyPreview
         ? const LoadingScreen()

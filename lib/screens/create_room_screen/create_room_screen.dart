@@ -16,6 +16,7 @@ import 'package:studie/widgets/form/form_title.dart';
 import 'package:studie/widgets/form/number_input.dart';
 import 'package:studie/widgets/form/pomodoro_setting.dart';
 import 'package:studie/widgets/form/text_input.dart';
+import 'package:studie/widgets/hide_scrollbar.dart';
 
 class CreateRoomScreen extends StatefulWidget {
   static const routeName = 'create';
@@ -270,47 +271,51 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                 const SizedBox(height: kMediumPadding),
                 SizedBox(
                   height: 50,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: bannerColors
-                          .map((colorName, color) {
-                            final selected = bannerColor == colorName;
-                            return MapEntry(
-                              colorName,
-                              GestureDetector(
-                                onTap: () =>
-                                    setState(() => bannerColor = colorName),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    right: kMediumPadding,
-                                  ),
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    height: selected ? 50 : 30,
-                                    width: selected ? 50 : 30,
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: color,
-                                        borderRadius: const BorderRadius.all(
-                                          Radius.circular(50),
+                  child: HideScrollbar(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: bannerColors
+                            .map((colorName, color) {
+                              final selected = bannerColor == colorName;
+                              return MapEntry(
+                                colorName,
+                                GestureDetector(
+                                  onTap: () =>
+                                      setState(() => bannerColor = colorName),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: kMediumPadding,
+                                    ),
+                                    child: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      height: selected ? 50 : 30,
+                                      width: selected ? 50 : 30,
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          color: color,
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(50),
+                                          ),
                                         ),
+                                        child: selected
+                                            ? const Icon(
+                                                Icons.check_rounded,
+                                                color: kWhite,
+                                                size: 24,
+                                              )
+                                            : null,
                                       ),
-                                      child: selected
-                                          ? const Icon(
-                                              Icons.check_rounded,
-                                              color: kWhite,
-                                              size: 24,
-                                            )
-                                          : null,
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          })
-                          .values
-                          .toList(),
+                              );
+                            })
+                            .values
+                            .toList(),
+                      ),
                     ),
                   ),
                 ),

@@ -10,6 +10,8 @@ class NoteWidget extends ConsumerWidget {
   final Note note;
   const NoteWidget({super.key, required this.note});
 
+  bool get hasFolderName => note.folderName != "all";
+
   void onNoteTab(BuildContext context, WidgetRef ref) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -29,6 +31,7 @@ class NoteWidget extends ConsumerWidget {
         child: InkWell(
           onTap: () => onNoteTab(context, ref),
           child: Container(
+            width: double.infinity,
             padding: const EdgeInsets.symmetric(
               horizontal: kMediumPadding,
               vertical: kDefaultPadding,
@@ -44,10 +47,11 @@ class NoteWidget extends ConsumerWidget {
                     fontSize: 16,
                   ),
                 ),
-                Text(
-                  note.folderName,
-                  style: const TextStyle(fontSize: 14, color: kWhite),
-                ),
+                if (hasFolderName)
+                  Text(
+                    note.folderName,
+                    style: const TextStyle(fontSize: 14, color: kWhite),
+                  ),
                 const SizedBox(height: kDefaultPadding),
                 Text(
                   note.text,
