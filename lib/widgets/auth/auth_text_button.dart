@@ -9,6 +9,8 @@ class CustomTextButton extends StatelessWidget {
   final bool loading;
   final bool disabled;
   final bool large;
+  final Color? color;
+
   const CustomTextButton({
     super.key,
     required this.text,
@@ -18,6 +20,7 @@ class CustomTextButton extends StatelessWidget {
     this.disabled = false,
     this.rounded = false,
     this.large = false,
+    this.color,
   });
 
   @override
@@ -26,7 +29,7 @@ class CustomTextButton extends StatelessWidget {
       ignoring: disabled,
       child: Material(
         clipBehavior: Clip.hardEdge,
-        color: primary ? kPrimaryColor : kLightGrey,
+        color: color ?? (primary ? kPrimaryColor : kLightGrey),
         borderRadius: BorderRadius.circular(rounded ? 40 : 10),
         child: InkWell(
           onTap: onTap,

@@ -22,7 +22,6 @@ class HomeScreen extends StatelessWidget {
           SizedBox(height: kDefaultPadding),
           // ProgressTracker(),
           CreateRoomCard(),
-          SizedBox(height: kDefaultPadding),
           RoomsSection(),
         ],
       ),

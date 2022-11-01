@@ -28,6 +28,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   void _createNewNote(BuildContext context, [mounted = true]) async {
     final newNote = Note.empty();
     final res = await DBMethods().putNoteToDB(newNote);
+    print(newNote.id);
     if (mounted) {
       if (res != "success") {
         return showSnackBar(context, res);

@@ -4,6 +4,7 @@ import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/flashcard.dart';
 import 'package:studie/models/note.dart';
+import 'package:studie/screens/flashcard_screen/flashcard_screen.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
 import 'package:studie/utils/show_snack_bar.dart';
@@ -11,6 +12,7 @@ import 'package:studie/widgets/auth/auth_text_button.dart';
 import 'package:studie/widgets/dialogs/custom_dialog.dart';
 
 const flashcardIdentifier = ">> ";
+const headerIdentifier = "#";
 
 class NoteEditScreen extends StatefulWidget {
   static const routeName = "/note_edit";
@@ -68,10 +70,15 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     await _dbMethods.deleteAllFlashcards(widget.note.id);
 
     flashcardsCreated = 0;
+    String curTitle = "";
     doc.split("\n").forEach((line) {
+      //TODO: change later
+      if (line.contains(headerIdentifier)) {
+        curTitle = line.substring(1).trim();
+      }
       if (line.contains(flashcardIdentifier)) {
         final sides = line.split(flashcardIdentifier);
-        _createFlashcard(sides[0], sides[1]);
+        _createFlashcard(curTitle, sides[0], sides[1]);
         flashcardsCreated++;
       }
     });
@@ -79,27 +86,13 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     setState(() => saved = true);
   }
 
-  // void _onEditingCompleted() {
-  //   final doc = _documentController.text;
-  //   final note =
-  //       widget.note.copyWith(newTitle: _titleController.text, newText: doc);
-
-  //   DBMethods().updateNote(widget.note.id, widget.note);
-  //   doc.split("\n").forEach((line) {
-  //     if (line.contains(flashcardIdentifier)) {
-  //       final sides = line.split(flashcardIdentifier);
-  //       _createFlashcard(sides[0], sides[1]);
-  //       flashcardsCreated++;
-  //     }
-  //   });
-
-  //   setState(() {});
-  // }
-
-  void _createFlashcard(String front, String back) async {
+  void _createFlashcard(String curTitle, String front, String back) async {
     final Flashcard flashcard = Flashcard(
       front: front,
       back: back,
+      curTitle: curTitle,
+      noteName: widget.note.title,
+      folderName: widget.note.folderName,
       revisedTimes: 0,
     );
 
@@ -182,7 +175,9 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
         child: Material(
           color: Colors.transparent,
           child: GestureDetector(
-            onTap: () {},
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => AllFlashcardsScreen(noteId: widget.note.id),
+            )),
             child: SizedBox(
               width: kIconSize + 10,
               child: Stack(
@@ -281,14 +276,19 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
                   // const SizedBox(height: kDefaultPadding),
                   Text(
                     "$lastEditHour - $lastEditDay",
-                    style: const TextStyle(fontSize: 14, color: kGrey),
+                    style: const TextStyle(fontSize: 14, color: kDarkGrey),
                   ),
+                  const SizedBox(height: kMediumPadding),
                   TextField(
                     controller: _documentController,
                     maxLines: null,
                     onChanged: _onDocumentChanged,
                     cursorColor: kPrimaryColor,
-                    decoration: const InputDecoration(border: InputBorder.none),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(color: kDarkGrey),
+                      hintText: "Nhập nội dung...",
+                    ),
                     style: const TextStyle(
                       height: 1.5,
                       color: kBlack,

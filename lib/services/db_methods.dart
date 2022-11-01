@@ -149,6 +149,7 @@ class DBMethods {
       final userId = _authMethods.user!.uid;
       final ref = _db.collection("users").doc(userId).collection("notes");
       final docRef = await ref.add(note.toJson());
+      await docRef.update({"id": docRef.id});
       note.copyWith(newId: docRef.id);
     } catch (e) {
       res = "Lỗi tạo ghi chú mới";
@@ -203,5 +204,13 @@ class DBMethods {
       res = e.toString();
     }
     return res;
+  }
+
+  Future<QuerySnapshot> getFlashcardsFromNote(String noteId) async {
+    final userId = _authMethods.user!.uid;
+    final ref =
+        _db.collection("users").doc(userId).collection("notes").doc(noteId);
+    final flashcards = await ref.collection("flashcards").get();
+    return flashcards;
   }
 }

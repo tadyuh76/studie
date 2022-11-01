@@ -4,12 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:photo_view/photo_view.dart';
 
 class FileViewPage extends ConsumerStatefulWidget {
   const FileViewPage({super.key});
@@ -20,7 +20,7 @@ class FileViewPage extends ConsumerStatefulWidget {
 
 class _FileViewPageState extends ConsumerState<FileViewPage>
     with AutomaticKeepAliveClientMixin {
-  String? _fileUrl;
+  // String? _fileUrl;
   String? _fileType;
   Uint8List? _filePicked;
   bool loading = false;
@@ -47,17 +47,18 @@ class _FileViewPageState extends ConsumerState<FileViewPage>
     final fileBytes = file.bytes;
     if (fileBytes == null) return;
 
-    try {
-      final roomId = ref.read(roomProvider).room!.id;
-      final fileDir = FirebaseStorage.instance.ref('$roomId/${file.name}');
-      final res = await fileDir.putData(fileBytes);
-      final fileUrl = await res.ref.getDownloadURL();
-      print("put file successfully");
-      _fileUrl = fileUrl;
-      // TODO: handle online pdf sharing
-    } catch (e) {
-      print("error putting file on storage: $e");
-    }
+    // try {
+    //   final roomId = ref.read(roomProvider).room!.id;
+    //   final fileDir = FirebaseStorage.instance.ref('$roomId/${file.name}');
+    //   final res = await fileDir.putData(fileBytes);
+    //   final fileUrl = await res.ref.getDownloadURL();
+    //   print("put file successfully");
+    //   _fileUrl = fileUrl;
+
+    //   // TODO: handle online pdf sharing
+    // } catch (e) {
+    //   print("error putting file on storage: $e");
+    // }
 
     setState(() {
       _filePicked = fileBytes;

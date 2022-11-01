@@ -39,6 +39,7 @@ flutter:
     - assets/icons/
     - assets/svgs/
     - assets/fonts/
+    - assets/lottie/
 
   fonts:
     - family: Quicksand

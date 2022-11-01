@@ -12,7 +12,8 @@ class RoomsSection extends StatelessWidget {
 
   Widget renderTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding)
+          .copyWith(top: kDefaultPadding),
       child: Text(
         title,
         style: const TextStyle(
