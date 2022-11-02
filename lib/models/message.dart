@@ -5,14 +5,16 @@ class Message {
   final String senderName;
   final String senderPhotoURL;
   final String createdAt;
+  String type;
 
-  const Message({
+  Message({
     required this.id,
     required this.senderId,
     required this.senderName,
     required this.senderPhotoURL,
     required this.text,
     required this.createdAt,
+    this.type = "message",
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class Message {
       "senderName": senderName,
       "senderPhotoURL": senderPhotoURL,
       "createdAt": createdAt,
+      "type": type,
     };
   }
 
@@ -34,6 +37,7 @@ class Message {
       senderPhotoURL: json["senderPhotoURL"],
       text: json["text"],
       createdAt: json["createdAt"],
+      type: json["type"] ?? "message",
     );
   }
 }

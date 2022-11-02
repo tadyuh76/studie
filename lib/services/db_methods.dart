@@ -213,4 +213,35 @@ class DBMethods {
     final flashcards = await ref.collection("flashcards").get();
     return flashcards;
   }
+
+  Future<DocumentSnapshot> getSharedNote(String userId, String noteId) async {
+    final ref =
+        _db.collection("users").doc(userId).collection("notes").doc(noteId);
+    final note = await ref.get();
+    return note;
+  }
+
+  Future<String> shareDocumentWithRoom(Note note, String roomId) async {
+    String res = "success";
+
+    try {
+      final user = _authMethods.user!;
+      final roomRef = _db.collection("rooms").doc(roomId);
+      final message = Message(
+        id: "",
+        senderId: user.uid,
+        senderName: user.displayName ?? kDefaultName,
+        senderPhotoURL: user.photoURL ?? "",
+        text: note.id,
+        createdAt: DateTime.now().toString(),
+        type: "document_share",
+      );
+      final msgRef = await roomRef.collection("messages").add(message.toJson());
+      msgRef.update({"id": msgRef.id});
+    } catch (e) {
+      res = "errong sharing doc: $e";
+    }
+
+    return res;
+  }
 }

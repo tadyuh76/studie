@@ -12,7 +12,7 @@ import 'package:studie/widgets/dialogs/custom_dialog.dart';
 
 const defaultTextStyle = TextStyle(
   color: kBlack,
-  fontSize: 18,
+  fontSize: 16,
   fontFamily: "Quicksand",
 );
 
@@ -94,6 +94,8 @@ class _AllFlashcardsScreenState extends State<AllFlashcardsScreen> {
               (doc) => Flashcard.fromJson(doc.data() as Map<String, dynamic>),
             )
             .toList();
+        flashcards.shuffle();
+
         return Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -117,15 +119,15 @@ class _AllFlashcardsScreenState extends State<AllFlashcardsScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _BackgroundText(text: flashcards.length.toString()),
-                Expanded(
+                Flexible(
                   child: Text(
-                    " trong ${flashcards[0].noteName}",
+                    " ${flashcards[0].noteName}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: kBlack,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 18,
                     ),
                   ),
                 ),
@@ -184,27 +186,51 @@ class _FlashcardPageState extends State<_FlashcardPage> {
           const SizedBox(height: kDefaultPadding),
           _BackgroundText(text: widget.curCard.noteName),
           const SizedBox(height: kMediumPadding),
-          Text(
-            "\u2022  ${widget.curCard.curTitle}",
-            style: defaultTextStyle.copyWith(fontWeight: FontWeight.bold),
-          ),
+          if (widget.curCard.curTitle != "")
+            Text(
+              "\u2022  ${widget.curCard.curTitle}",
+              style: defaultTextStyle.copyWith(fontWeight: FontWeight.bold),
+            ),
           const SizedBox(height: kSmallPadding),
-          Wrap(
-            runSpacing: kSmallPadding,
-            children: [
-              Text(
-                "    \u2022  ${widget.curCard.front}",
-                style: defaultTextStyle,
-              ),
-              Text(
-                " \u2794 ",
-                style: defaultTextStyle.copyWith(
-                  color: kPrimaryColor,
+          if (!showAnswer)
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              runSpacing: kSmallPadding,
+              children: [
+                Text(
+                  "    \u2022  ${widget.curCard.front}",
+                  style: defaultTextStyle,
                 ),
+                Text(
+                  " \u2794 ",
+                  style: defaultTextStyle.copyWith(
+                    color: kPrimaryColor,
+                  ),
+                ),
+                const _BackgroundText(text: "?")
+              ],
+            ),
+          if (showAnswer)
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "    \u2022  ${widget.curCard.front}",
+                    style: defaultTextStyle,
+                  ),
+                  TextSpan(
+                    text: " \u2794 ",
+                    style: defaultTextStyle.copyWith(color: kPrimaryColor),
+                  ),
+                  TextSpan(
+                    text: widget.curCard.back,
+                    style: defaultTextStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              _BackgroundText(text: showAnswer ? widget.curCard.back : "?")
-            ],
-          ),
+            ),
           const Spacer(),
           if (!showAnswer)
             CustomTextButton(
@@ -275,8 +301,9 @@ class _BackgroundText extends StatelessWidget {
           text,
           style: const TextStyle(
             color: kBlack,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
+            height: 1.4,
           ),
         ),
       ),

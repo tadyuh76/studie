@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/flashcard.dart';
 import 'package:studie/models/note.dart';
+import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/flashcard_screen/flashcard_screen.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
@@ -30,6 +33,7 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
   final _documentController = _DocCustomController();
   int flashcardsCreated = 0;
   bool saved = true;
+  bool saving = false;
 
   @override
   void initState() {
@@ -62,6 +66,8 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
   }
 
   void _onSaved() async {
+    setState(() => saving = true);
+
     _dismissKeyboard();
     final doc = _documentController.text;
     widget.note.copyWith(newTitle: _titleController.text, newText: doc);
@@ -83,7 +89,9 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
       }
     });
 
-    setState(() => saved = true);
+    saved = true;
+    saving = false;
+    setState(() {});
   }
 
   void _createFlashcard(String curTitle, String front, String back) async {
@@ -158,17 +166,36 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     return false;
   }
 
+  Future<void> _shareNote(BuildContext context, WidgetRef ref) async {
+    final roomId = ref.read(roomProvider).room?.id;
+    if (roomId == null)
+      showSnackBar(context, "Bạn cần ở trong một phòng học mới có thể chia sẻ");
+
+    final res = await _dbMethods.shareDocumentWithRoom(widget.note, roomId!);
+  }
+
   _renderDefaultLeading() {
     return [
       IconButton(
         splashRadius: kIconSize,
         onPressed: () {},
         icon: SvgPicture.asset(
-          "assets/icons/share.svg",
+          "assets/icons/color.svg",
           height: kIconSize,
           width: kIconSize,
         ),
       ),
+      Consumer(builder: (context, ref, _) {
+        return IconButton(
+          splashRadius: kIconSize,
+          onPressed: () => _shareNote(context, ref),
+          icon: SvgPicture.asset(
+            "assets/icons/share.svg",
+            height: kIconSize,
+            width: kIconSize,
+          ),
+        );
+      }),
       Padding(
         padding:
             const EdgeInsets.only(right: kDefaultPadding, left: kSmallPadding),
@@ -238,7 +265,16 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
               ..._renderActiveLeading()
             else
               ..._renderDefaultLeading(),
-            if (!saved)
+            if (saving)
+              IconButton(
+                onPressed: () {},
+                icon: const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            if (!saved && !saving)
               IconButton(
                 splashRadius: kIconSize,
                 onPressed: _onSaved,
@@ -280,6 +316,8 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
                   ),
                   const SizedBox(height: kMediumPadding),
                   TextField(
+                    maxLengthEnforcement: MaxLengthEnforcement.none,
+                    maxLength: TextField.noMaxLength,
                     controller: _documentController,
                     maxLines: null,
                     onChanged: _onDocumentChanged,
@@ -318,11 +356,27 @@ class _DocCustomController extends TextEditingController {
   }
 
   bool _isFlashcard(String line) {
-    return line.contains(">> ");
+    return line.contains(">> ") || line.contains("<> ") || line.contains("<< ");
+  }
+
+  String _getFlashcardType(String line) {
+    final toDirection = line.contains(">> ") ? ">> " : "";
+    final fromDirection = line.contains("<< ") ? "<< " : "";
+    final twoDirection = line.contains("<> ") ? "<> " : "";
+
+    if (toDirection.isNotEmpty) return toDirection;
+    if (fromDirection.isNotEmpty) return fromDirection;
+    return twoDirection;
   }
 
   TextSpan _renderFlashcard(String line, TextStyle style) {
-    final cardSides = line.split(">> ");
+    final cardType = _getFlashcardType(line);
+    final cardSides = line.split(cardType);
+    final symbol = cardType == ">> "
+        ? " → "
+        : cardType == "<< "
+            ? " ← "
+            : " ↔ ";
     final frontSideText = cardSides[0];
     final backSideText = cardSides[1];
 

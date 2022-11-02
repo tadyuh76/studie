@@ -9,6 +9,7 @@ import 'package:studie/screens/loading_screen/loading_screen.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/widgets/hide_scrollbar.dart';
 import 'package:studie/widgets/message_box.dart';
+import 'package:studie/widgets/note_shared.dart';
 
 class ChatsPage extends ConsumerWidget {
   ChatsPage({super.key});
@@ -83,7 +84,11 @@ class ChatsPage extends ConsumerWidget {
                         if (index == 0) {
                           return const SizedBox(height: kDefaultPadding);
                         }
-                        return MessageBox(message: messages[index - 1]);
+
+                        final curMsg = messages[index - 1];
+                        return curMsg.type == "message"
+                            ? MessageBox(message: curMsg)
+                            : NoteSharedWidget(messageWithNote: curMsg);
                       },
                     ),
                   ),

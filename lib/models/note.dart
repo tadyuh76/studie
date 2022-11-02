@@ -28,6 +28,8 @@ class Note {
     folderName = newFolderName ?? folderName;
     color = newColor ?? color;
 
+    lastEdit = DateTime.now().toString();
+
     return this;
   }
 
