@@ -1,3 +1,5 @@
+import 'package:studie/models/note.dart';
+
 class Message {
   final String id;
   final String text;
@@ -6,6 +8,7 @@ class Message {
   final String senderPhotoURL;
   final String createdAt;
   String type;
+  Note? note;
 
   Message({
     required this.id,
@@ -39,5 +42,9 @@ class Message {
       createdAt: json["createdAt"],
       type: json["type"] ?? "message",
     );
+  }
+
+  void addNote(Note newNote) {
+    note = newNote;
   }
 }

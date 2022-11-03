@@ -24,6 +24,7 @@ dependencies:
   file_picker: ^5.2.2
   firebase_storage: ^10.3.11
   photo_view: ^0.14.0
+  just_audio: ^0.9.30
 
 dev_dependencies:
   flutter_test:

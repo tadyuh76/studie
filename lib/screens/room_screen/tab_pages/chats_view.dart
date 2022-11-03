@@ -78,14 +78,12 @@ class ChatsPage extends ConsumerWidget {
                       addRepaintBoundaries: false,
                       reverse: true,
                       physics: const BouncingScrollPhysics(),
-                      itemCount: messages.length + 1,
+                      itemCount: messages.length,
                       shrinkWrap: true,
+                      padding:
+                          const EdgeInsets.symmetric(vertical: kDefaultPadding),
                       itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return const SizedBox(height: kDefaultPadding);
-                        }
-
-                        final curMsg = messages[index - 1];
+                        final curMsg = messages[index];
                         return curMsg.type == "message"
                             ? MessageBox(message: curMsg)
                             : NoteSharedWidget(messageWithNote: curMsg);

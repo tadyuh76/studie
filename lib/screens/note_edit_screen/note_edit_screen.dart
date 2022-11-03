@@ -168,10 +168,14 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
 
   Future<void> _shareNote(BuildContext context, WidgetRef ref) async {
     final roomId = ref.read(roomProvider).room?.id;
-    if (roomId == null)
-      showSnackBar(context, "Bạn cần ở trong một phòng học mới có thể chia sẻ");
+    if (roomId == null) {
+      return showSnackBar(
+        context,
+        "Bạn cần ở trong một phòng học mới có thể chia sẻ",
+      );
+    }
 
-    final res = await _dbMethods.shareDocumentWithRoom(widget.note, roomId!);
+    final res = await _dbMethods.shareDocumentWithRoom(widget.note, roomId);
   }
 
   _renderDefaultLeading() {

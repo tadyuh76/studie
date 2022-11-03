@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
 import 'package:studie/models/room.dart';
@@ -14,6 +15,7 @@ import 'package:studie/screens/room_screen/widgets/app_bar.dart';
 import 'package:studie/screens/room_screen/widgets/pomodoro_widget.dart';
 import 'package:studie/screens/room_screen/widgets/study_session.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
+import 'package:studie/widgets/dialogs/custom_dialog.dart';
 import 'package:studie/widgets/dialogs/leave_dialog.dart';
 
 final Map<String, Widget> tabs = {
@@ -37,12 +39,16 @@ class RoomScreen extends ConsumerStatefulWidget {
 class _RoomScreenState extends ConsumerState<RoomScreen>
     with WidgetsBindingObserver {
   final _pageController = PageController(initialPage: 0);
+  late AudioPlayer _audioPlayer;
   int _currentTabIndex = 0;
+  bool showMusicBox = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _audioPlayer = AudioPlayer();
+    _setUpMusic();
 
     final pomodoro = ref.read(pomodoroProvider);
     pomodoro.initTimer("pomodoro_50");
@@ -95,54 +101,86 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
     return false;
   }
 
+  void _onDisplayMusic() {
+    showMusicBox = !showMusicBox;
+    setState(() {});
+  }
+
+  Future<void> _setUpMusic() async {
+    await _audioPlayer.setUrl(
+      "https://firebasestorage.googleapis.com/v0/b/studie-a9c68.appspot.com/o/lofis%2FMorning-Routine-Lofi-Study-Music.mp3?alt=media&token=c8eb9b4b-b7aa-46d2-98a8-d2c3cc50d323",
+    );
+  }
+
+  void _onMusicStart() {
+    if (_audioPlayer.playing) return;
+    _audioPlayer.play();
+  }
+
+  void _onMusicStop() async {
+    _audioPlayer.stop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onQuitRoom,
-      child: Scaffold(
-        key: globalKey,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: RoomAppBar(roomName: widget.room.name),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding, vertical: kMediumPadding),
-              child: Row(
-                children: [
-                  const PomodoroWidget(),
-                  const SizedBox(width: kMediumPadding),
-                  const GoalSession(),
-                  const Spacer(),
-                  SizedBox(
-                    height: 50,
-                    width: 50,
-                    child: Material(
-                      color: kLightGrey,
-                      clipBehavior: Clip.hardEdge,
-                      borderRadius: BorderRadius.circular(10),
-                      child: InkWell(
-                        onTap: () {},
-                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/icons/music.svg',
-                            color: kTextColor,
-                            width: 32,
-                            height: 32,
+      child: Stack(
+        children: [
+          Scaffold(
+            key: globalKey,
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: RoomAppBar(roomName: widget.room.name),
+            ),
+            body: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kDefaultPadding, vertical: kMediumPadding),
+                  child: Row(
+                    children: [
+                      const PomodoroWidget(),
+                      const SizedBox(width: kMediumPadding),
+                      const GoalSession(),
+                      const Spacer(),
+                      SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Material(
+                          color: kLightGrey,
+                          clipBehavior: Clip.hardEdge,
+                          borderRadius: BorderRadius.circular(10),
+                          child: InkWell(
+                            onTap: _onDisplayMusic,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                'assets/icons/music.svg',
+                                color: kTextColor,
+                                width: 32,
+                                height: 32,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+                      )
+                    ],
+                  ),
+                ),
+                renderTabNavigator(),
+                renderTabView(),
+              ],
             ),
-            renderTabNavigator(),
-            renderTabView(),
-          ],
-        ),
+          ),
+          Visibility(
+            visible: showMusicBox,
+            child: MusicBox(
+              hideBox: _onDisplayMusic,
+              startMusic: _onMusicStart,
+              stopMusic: _onMusicStop,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -198,6 +236,108 @@ class TabItem extends StatelessWidget {
           child: SvgPicture.asset(
             'assets/icons/$iconName.svg',
             color: isActive ? kWhite : kDarkGrey,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MusicBox extends StatefulWidget {
+  final VoidCallback hideBox;
+  final VoidCallback startMusic;
+  final VoidCallback stopMusic;
+  const MusicBox({
+    super.key,
+    required this.hideBox,
+    required this.startMusic,
+    required this.stopMusic,
+  });
+
+  @override
+  State<MusicBox> createState() => _MusicBoxState();
+}
+
+class _MusicBoxState extends State<MusicBox> {
+  double volume = 0;
+  bool get mute => volume == 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: kToolbarHeight + 100,
+          right: kDefaultPadding,
+        ),
+        child: Align(
+          alignment: Alignment.topRight,
+          child: Container(
+            width: 280,
+            height: 200,
+            padding: const EdgeInsets.all(kDefaultPadding),
+            decoration: const BoxDecoration(
+              color: kWhite,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              boxShadow: [BoxShadow(blurRadius: 8, color: kShadow)],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/icons/music.svg",
+                      color: kBlack,
+                      height: kIconSize,
+                      width: kIconSize,
+                    ),
+                    const SizedBox(width: kMediumPadding),
+                    const Text(
+                      "Nhạc nền",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: widget.hideBox,
+                      icon: const Icon(Icons.close),
+                    )
+                  ],
+                ),
+                const Text(
+                  "🌠 Lofi",
+                  style: TextStyle(fontSize: 14),
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      mute ? Icons.volume_off_rounded : Icons.volume_up,
+                      color: kDarkGrey,
+                    ),
+                    Expanded(
+                      child: Slider(
+                        value: volume,
+                        onChanged: (value) {
+                          if (value > 0) {
+                            widget.startMusic();
+                          } else {
+                            widget.stopMusic();
+                          }
+                          setState(() {
+                            volume = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
