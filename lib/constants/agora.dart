@@ -1,3 +1,3 @@
 const appId = "0bad580c8d844946b43d9201ef4b4c22";
 const tempToken =
-    "007eJxTYDgXv9TSmifng5iZPfMtpo9VygviddbOXLsh+8eS+JcMTS4KDAZJiSmmFgbJFikWJiaWJmZJJsYplkYGhqlpJkkmyUZGAkdjkxsCGRni9AQYGRkgEMRnYyhJTKkszWBgAAD7th3E";
+    "007eJxTYHCrUcrc1zT5dOn/eSGHI/L3t2+q3vZtxc1/5zMXnF8c5OeiwGCQlJhiamGQbJFiYWJiaWKWZGKcYmlkYJiaZpJkkmxkxKKbntwQyMjwsEaZlZEBAkF8NoaSxJTK0gwGBgBdlSIw";

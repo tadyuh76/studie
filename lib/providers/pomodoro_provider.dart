@@ -53,8 +53,8 @@ class PomodoroNotifier extends ChangeNotifier {
         _longbreakDuration = 30 * minute;
         break;
       default:
-        _timePerSession = (0.1 * minute).toInt();
-        _breaktimeDuration = (0.1 * minute).toInt();
+        _timePerSession = (0.2 * minute).toInt();
+        _breaktimeDuration = (10 * minute).toInt();
         _longbreakDuration = 2 * minute;
     }
     _remainTime = _timePerSession;

@@ -4,80 +4,46 @@ import 'package:flutter_svg/svg.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
-import 'package:studie/models/room.dart';
 import 'package:studie/providers/goals_provider.dart';
 import 'package:studie/providers/pomodoro_provider.dart';
-import 'package:studie/providers/room_provider.dart';
-import 'package:studie/providers/room_settings_provider.dart';
 import 'package:studie/screens/document_screen/document_screen.dart';
-import 'package:studie/screens/tab_pages/camera_view.dart';
-import 'package:studie/screens/tab_pages/chats_view.dart';
-import 'package:studie/screens/tab_pages/file_view.dart';
-import 'package:studie/screens/room_screen/widgets/app_bar.dart';
+import 'package:studie/screens/room_screen/widgets/goal_session.dart';
 import 'package:studie/screens/room_screen/widgets/music_box.dart';
 import 'package:studie/screens/room_screen/widgets/pomodoro_widget.dart';
-import 'package:studie/screens/room_screen/widgets/goal_session.dart';
+import 'package:studie/screens/tab_pages/chill_page.dart';
+import 'package:studie/screens/tab_pages/file_view.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
 import 'package:studie/widgets/dialogs/leave_dialog.dart';
 
 final Map<String, Widget> tabs = {
-  "camera": const CameraViewPage(),
+  // "chill": const ChillPage(),
   "file": const FileViewPage(),
-  "chats": ChatsPage(),
   "notes": const DocumentScreen(),
 };
 
-final globalKey = GlobalKey();
-
-class RoomScreen extends ConsumerStatefulWidget {
-  static const routeName = "/room";
-  final Room room;
-  const RoomScreen({super.key, required this.room});
+class SoloStudyScreen extends ConsumerStatefulWidget {
+  static const routeName = "/solo";
+  const SoloStudyScreen({super.key});
 
   @override
-  ConsumerState<RoomScreen> createState() => _RoomScreenState();
+  ConsumerState<SoloStudyScreen> createState() => _SoloStudyScreenState();
 }
 
-class _RoomScreenState extends ConsumerState<RoomScreen>
-    with WidgetsBindingObserver {
-  final _pageController = PageController(initialPage: 0);
-  late AudioPlayer _audioPlayer;
+class _SoloStudyScreenState extends ConsumerState<SoloStudyScreen> {
   int _currentTabIndex = 0;
   bool showMusicBox = false;
+  late AudioPlayer _audioPlayer;
+  final _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _audioPlayer = AudioPlayer();
     _setUpMusic();
 
     final pomodoro = ref.read(pomodoroProvider);
-    pomodoro.initTimer("pomodoro_test");
+    pomodoro.initTimer("pomodoro_50");
     pomodoro.startTimer(context);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-    _audioPlayer.dispose();
-    _pageController.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state, [mounted = true]) {
-    // if (state == AppLifecycleState.resumed && mounted) {
-    //   showSnackBar(
-    //     context,
-    //     "Đã rời khỏi phòng học do thoát ứng dụng đột ngột!",
-    //   );
-    // }
-    // if (state == AppLifecycleState.paused) {
-    //   ref.read(roomProvider).exitRoom(widget.room.id);
-    //   ref.read(pomodoroProvider).reset();
-    //   Navigator.of(context).pop();
-    // }
   }
 
   void onTabTap(int index) {
@@ -94,9 +60,7 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
     showCustomDialog(
       context: context,
       dialog: LeaveDialog(() {
-        ref.read(roomProvider).exitRoom(widget.room.id);
         ref.read(pomodoroProvider).reset();
-        ref.read(roomSettingsProvider).reset();
         ref.read(goalsProvider).reset();
         Navigator.of(context).pop();
         Navigator.of(context).pop();
@@ -134,10 +98,9 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
       child: Stack(
         children: [
           Scaffold(
-            key: globalKey,
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: RoomAppBar(roomName: widget.room.name),
+              child: _renderAppBar(),
             ),
             body: Column(
               children: [
@@ -162,7 +125,7 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
                             child: Center(
                               child: SvgPicture.asset(
                                 'assets/icons/music.svg',
-                                color: kTextColor,
+                                color: kBlack,
                                 width: 32,
                                 height: 32,
                               ),
@@ -187,6 +150,26 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  PreferredSizeWidget _renderAppBar() {
+    return PreferredSize(
+      preferredSize: const Size(double.infinity, kToolbarHeight),
+      child: AppBar(
+        backgroundColor: kWhite,
+        foregroundColor: kBlack,
+        elevation: 0,
+        titleSpacing: 0,
+        title: const Text(
+          "Phòng học cá nhân",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: kBlack,
+          ),
+        ),
       ),
     );
   }

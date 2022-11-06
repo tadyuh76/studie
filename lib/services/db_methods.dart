@@ -181,7 +181,6 @@ class DBMethods {
       final flashcardsRef = noteRef.collection("flashcards");
       final flashcards = await flashcardsRef.get();
       for (final card in flashcards.docs) {
-        print("id: ${card.id} deleted.");
         await flashcardsRef.doc(card.id).delete();
       }
     } catch (e) {
@@ -239,7 +238,7 @@ class DBMethods {
       final msgRef = await roomRef.collection("messages").add(message.toJson());
       msgRef.update({"id": msgRef.id});
     } catch (e) {
-      res = "errong sharing doc: $e";
+      res = "error sharing doc: $e";
     }
 
     return res;

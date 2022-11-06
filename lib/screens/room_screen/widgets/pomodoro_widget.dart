@@ -46,7 +46,9 @@ class _PomodoroBox extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(
-          top: kToolbarHeight + 80, left: kDefaultPadding),
+        top: kToolbarHeight + 80,
+        left: kDefaultPadding,
+      ),
       child: Align(
         alignment: Alignment.topLeft,
         child: Container(
@@ -74,18 +76,12 @@ class _PomodoroBox extends StatelessWidget {
                     lineWidth: 12,
                     circularStrokeCap: CircularStrokeCap.round,
                     animation: false,
-                    center: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: formatTime(pomodoro.remainTime),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: kBlack,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ],
+                    center: Text(
+                      formatTime(pomodoro.remainTime),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: kBlack,
+                        fontSize: 32,
                       ),
                     ),
                   ),

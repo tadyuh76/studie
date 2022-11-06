@@ -1,5 +1,4 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:studie/constants/breakpoints.dart';
 import 'package:studie/constants/colors.dart';
-import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/loading_screen/loading_screen.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -87,7 +85,7 @@ class _FileViewPageState extends ConsumerState<FileViewPage>
                 _filePicked!,
                 controller: PdfViewerController(),
                 onDocumentLoadFailed: (details) =>
-                    print("loaded fail: $details"),
+                    debugPrint("loaded fail: $details"),
               )
             : PhotoView(
                 imageProvider: MemoryImage(_filePicked!),
@@ -103,6 +101,7 @@ class _FileViewPageState extends ConsumerState<FileViewPage>
               mainAxisSize: MainAxisSize.min,
               children: [
                 FloatingActionButton(
+                  heroTag: "refresh",
                   tooltip: "Làm mới",
                   onPressed: _resetFile,
                   backgroundColor: kPrimaryColor,
@@ -114,6 +113,7 @@ class _FileViewPageState extends ConsumerState<FileViewPage>
                 ),
                 const SizedBox(height: kMediumPadding),
                 FloatingActionButton(
+                  heroTag: "add",
                   tooltip: "Thêm ảnh/tệp khác",
                   onPressed: _pickFile,
                   backgroundColor: kPrimaryColor,

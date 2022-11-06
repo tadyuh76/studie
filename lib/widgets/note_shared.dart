@@ -26,7 +26,7 @@ class NoteSharedWidget extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: kMediumPadding)
@@ -71,7 +71,7 @@ class _SharedNoteData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //TODO: optimize cahce later
+    //TODO: optimize cache later
     return FutureBuilder(
       future: DBMethods().getSharedNote(
         messageWithNote.senderId,

@@ -24,6 +24,12 @@ class RoomSettingsNotifier extends ChangeNotifier {
     _switchCamera = !_switchCamera;
     notifyListeners();
   }
+
+  void reset() {
+    _switchCamera = false;
+    _micEnabled = false;
+    _cameraEnabled = false;
+  }
 }
 
 final roomSettingsProvider =

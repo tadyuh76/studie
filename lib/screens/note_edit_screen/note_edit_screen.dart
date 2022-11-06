@@ -8,6 +8,7 @@ import 'package:studie/models/flashcard.dart';
 import 'package:studie/models/note.dart';
 import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/flashcard_screen/flashcard_screen.dart';
+import 'package:studie/screens/room_screen/room_screen.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
 import 'package:studie/utils/show_snack_bar.dart';
@@ -176,6 +177,11 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     }
 
     final res = await _dbMethods.shareDocumentWithRoom(widget.note, roomId);
+    if (mounted) {
+      if (res == "success") {
+        showSnackBar(globalKey.currentState!.context, "Đã chia sẻ thành công!");
+      }
+    }
   }
 
   _renderDefaultLeading() {
@@ -376,11 +382,11 @@ class _DocCustomController extends TextEditingController {
   TextSpan _renderFlashcard(String line, TextStyle style) {
     final cardType = _getFlashcardType(line);
     final cardSides = line.split(cardType);
-    final symbol = cardType == ">> "
-        ? " → "
-        : cardType == "<< "
-            ? " ← "
-            : " ↔ ";
+    // final symbol = cardType == ">> "
+    //     ? " → "
+    //     : cardType == "<< "
+    //         ? " ← "
+    //         : " ↔ ";
     final frontSideText = cardSides[0];
     final backSideText = cardSides[1];
 

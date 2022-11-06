@@ -6,11 +6,13 @@ class CheckBoxOption extends StatelessWidget {
   final String text;
   final IconData icon;
   final bool enabled;
+  final void Function(bool?) onTap;
   const CheckBoxOption({
     Key? key,
     required this.text,
     required this.icon,
     required this.enabled,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -24,7 +26,7 @@ class CheckBoxOption extends StatelessWidget {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(4)),
           ),
-          onChanged: (val) {},
+          onChanged: onTap,
         ),
         Text(
           text,

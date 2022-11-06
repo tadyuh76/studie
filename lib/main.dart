@@ -9,6 +9,7 @@ import 'package:studie/screens/create_room_screen/create_room_screen.dart';
 import 'package:studie/screens/root_screen/root_screen.dart';
 import 'package:studie/screens/sign_in_screen/sign_in_screen.dart';
 import 'package:studie/screens/sign_up_screen/sign_up_screen.dart';
+import 'package:studie/screens/solo_study_screen/solo_study_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +41,8 @@ class App extends StatelessWidget {
         SignInScreen.routeName: ((context) => const SignInScreen()),
         SignUpScreen.routeName: ((context) => const SignUpScreen()),
         RootScreen.routeName: ((context) => const RootScreen()),
-        CreateRoomScreen.routeName: ((context) => const CreateRoomScreen())
+        CreateRoomScreen.routeName: ((context) => const CreateRoomScreen()),
+        SoloStudyScreen.routeName: ((context) => const SoloStudyScreen()),
       },
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),

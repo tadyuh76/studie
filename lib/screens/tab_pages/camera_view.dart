@@ -143,11 +143,11 @@ class _State extends ConsumerState<CameraViewPage>
     await _engine.release();
   }
 
-  void _settingsCall() {
+  Future<void> _settingsCall() async {
     final roomSettings = ref.read(roomSettingsProvider);
-    if (roomSettings.cameraEnabled) _engine.enableVideo();
-    if (roomSettings.micEnabled) _engine.enableAudio();
-    if (roomSettings.switchCamera) _engine.switchCamera();
+    if (roomSettings.cameraEnabled) await _engine.enableVideo();
+    if (roomSettings.micEnabled) await _engine.enableAudio();
+    if (roomSettings.switchCamera) await _engine.switchCamera();
   }
 
   Future<void> _initEngine() async {
@@ -216,15 +216,23 @@ class _State extends ConsumerState<CameraViewPage>
       _isReadyPreview = true;
     });
 
-    _settingsCall();
+    await _settingsCall();
     await _joinChannel();
   }
 
   Future<void> _joinChannel() async {
+    // final userName = ref.read(userProvider).user;
+    // await _engine.registerLocalUserAccount(appId: appId, userAccount: userName);
+    // await _engine.joinChannelWithUserAccount(
+    //   token: tempToken,
+    //   channelId: channelName,
+    //   userAccount: userName,
+    // );
+
     await _engine.joinChannel(
       token: tempToken,
       channelId: channelName,
-      uid: 0,
+      uid: _room.curParticipants,
       options: ChannelMediaOptions(
         channelProfile: ChannelProfileType.channelProfileCommunication,
         clientRoleType: _room.hostUid == _user.uid
@@ -298,42 +306,60 @@ class _State extends ConsumerState<CameraViewPage>
       );
     }
 
+    final size = MediaQuery.of(context).size;
+    final videoWidth = size.width - kDefaultPadding;
+    final videoHeight = videoWidth * 9 / 16;
+
     return !_isReadyPreview
         ? const LoadingScreen()
         : Container(
             color: kBlack,
+            padding: const EdgeInsets.all(kMediumPadding),
             child: Stack(
               children: [
-                if (roomSettings.cameraEnabled)
-                  AgoraVideoView(
-                    controller: VideoViewController(
-                      rtcEngine: _engine,
-                      canvas: const VideoCanvas(uid: 0),
-                    ),
-                  ),
-                if (roomSettings.cameraEnabled)
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.of(remoteUid.map(
-                          (e) => SizedBox(
-                            width: 120,
-                            height: 120,
-                            child: AgoraVideoView(
-                              controller: VideoViewController.remote(
-                                rtcEngine: _engine,
-                                canvas: VideoCanvas(uid: e),
-                                connection:
-                                    const RtcConnection(channelId: channelName),
-                              ),
-                            ),
+                Column(
+                  children: [
+                    if (roomSettings.cameraEnabled)
+                      SizedBox(
+                        height: videoHeight,
+                        width: videoWidth,
+                        child: AgoraVideoView(
+                          controller: VideoViewController(
+                            rtcEngine: _engine,
+                            canvas: const VideoCanvas(uid: 0),
                           ),
-                        )),
+                        ),
                       ),
-                    ),
-                  ),
+                    if (roomSettings.cameraEnabled)
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: List.of(remoteUid.map(
+                              (e) => Padding(
+                                padding:
+                                    const EdgeInsets.only(top: kMediumPadding),
+                                child: SizedBox(
+                                  width: videoWidth,
+                                  height: videoHeight,
+                                  child: AgoraVideoView(
+                                    controller: VideoViewController.remote(
+                                      rtcEngine: _engine,
+                                      canvas: VideoCanvas(uid: e),
+                                      connection: const RtcConnection(
+                                        channelId: channelName,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(

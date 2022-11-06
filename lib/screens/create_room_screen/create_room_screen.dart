@@ -35,10 +35,10 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   bool micEnable = false;
   bool cameraEnable = false;
-  bool chatEnable = true;
+  bool chatEnable = false;
   String pomodoroType = 'pomodoro_50';
   List<String> selectedTags = [];
-  String bannerColor = 'red';
+  String bannerColor = 'blue';
   int _currentStep = 0;
 
   @override
@@ -173,6 +173,9 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                 const SizedBox(height: kMediumPadding),
                 CheckBoxOption(
                   enabled: micEnable,
+                  onTap: (val) => setState(() {
+                    micEnable = val!;
+                  }),
                   icon: Icons.mic_rounded,
                   text: 'Cho phép Mic',
                 ),
@@ -181,15 +184,25 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                   text: 'Cho phép Camera',
                   icon: Icons.videocam_rounded,
                   enabled: cameraEnable,
+                  onTap: (val) => setState(() {
+                    cameraEnable = val!;
+                  }),
                 ),
                 const SizedBox(height: kMediumPadding),
                 CheckBoxOption(
                   text: 'Cho phép Chat',
                   icon: Icons.chat_rounded,
                   enabled: chatEnable,
+                  onTap: (val) => setState(() {
+                    chatEnable = val!;
+                  }),
                 ),
                 const SizedBox(height: kDefaultPadding),
-                PomodoroSetting(pomodoroType: pomodoroType)
+                PomodoroSetting(
+                  onTap: (val) => setState(() {
+                    pomodoroType = val!;
+                  }),
+                ),
               ],
             ),
           ),

@@ -1,5 +1,5 @@
 name: studie
-description: A new Flutter project.
+description: An E-Learning app which helps students to connect with friends, teachers easily and provides useful functions for efficient, productive learning.
 
 publish_to: "none"
 
@@ -30,6 +30,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.10.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: assets/logo.png
 
 flutter:
   uses-material-design: true
