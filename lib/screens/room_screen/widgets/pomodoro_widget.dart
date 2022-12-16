@@ -81,7 +81,7 @@ class _PomodoroBox extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: kBlack,
-                        fontSize: 32,
+                        fontSize: 24,
                       ),
                     ),
                   ),

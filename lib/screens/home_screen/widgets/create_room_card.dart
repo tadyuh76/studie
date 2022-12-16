@@ -72,16 +72,22 @@ class CreateRoomCard extends StatelessWidget {
                       ),
                       const Divider(
                           color: kDarkGrey, height: kDefaultPadding * 2),
-                      _CustomRoomButton(
-                        iconName: "solo_study",
-                        title: "Phòng học cá nhân",
-                        subtitle:
-                            "Tạo không gian học thoải mái với mục tiêu của bạn và nhiều công cụ tiện lợi!",
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context)
-                              .pushNamed(SoloStudyScreen.routeName);
-                        },
+                      Opacity(
+                        opacity: 0.5,
+                        child: IgnorePointer(
+                          ignoring: true,
+                          child: _CustomRoomButton(
+                            iconName: "solo_study",
+                            title: "Phòng học cá nhân",
+                            subtitle:
+                                "Tạo không gian học thoải mái với mục tiêu của bạn và nhiều công cụ tiện lợi!",
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context)
+                                  .pushNamed(SoloStudyScreen.routeName);
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),

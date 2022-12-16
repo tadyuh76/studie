@@ -5,7 +5,10 @@ class Room {
   String _id = '';
   final String name;
   final String bannerColor;
+  final String fileUrl;
+  final String fileType;
   final String description;
+  final String pomodoroType;
   final List<dynamic> tags;
   final int maxParticipants;
   final int curParticipants;
@@ -17,7 +20,10 @@ class Room {
     required this.hostUid,
     required this.name,
     required this.bannerColor,
+    required this.fileType,
+    required this.fileUrl,
     required this.description,
+    required this.pomodoroType,
     required this.tags,
     required this.maxParticipants,
     required this.curParticipants,
@@ -33,7 +39,10 @@ class Room {
       "id": _id,
       "name": name,
       "bannerColor": bannerColor,
+      "fileUrl": fileUrl,
+      "fileType": fileType,
       "description": description,
+      "pomodoroType": pomodoroType,
       "tags": tags,
       "maxParticipants": maxParticipants,
       "curParticipants": curParticipants,
@@ -47,7 +56,10 @@ class Room {
     final room = Room(
       name: json['name'],
       bannerColor: json['bannerColor'],
+      fileUrl: json['fileUrl'],
+      fileType: json['fileType'],
       description: json['description'],
+      pomodoroType: json['pomodoroType'],
       tags: json['tags'],
       maxParticipants: json['maxParticipants'],
       curParticipants: json['curParticipants'],

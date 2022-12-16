@@ -23,8 +23,17 @@ import 'package:studie/widgets/dialogs/leave_dialog.dart';
 final Map<String, Widget> tabs = {
   "camera": const CameraViewPage(),
   "file": const FileViewPage(),
-  "chats": ChatsPage(),
+  "chats": const ChatsPage(),
   "notes": const DocumentScreen(),
+};
+
+const Map<String, String> sounds = {
+  "lofi":
+      "https://firebasestorage.googleapis.com/v0/b/studie-a9c68.appspot.com/o/musics%2FMorning-Routine-Lofi-Study-Music%20(1).mp3?alt=media&token=b704c160-7343-460b-8b92-dd4a99fd8f62",
+  "rain":
+      "https://firebasestorage.googleapis.com/v0/b/studie-a9c68.appspot.com/o/musics%2Flight-rain-ambient-114354.mp3?alt=media&token=db2fac60-6239-4931-b652-0d45812c9050",
+  "library":
+      "https://firebasestorage.googleapis.com/v0/b/studie-a9c68.appspot.com/o/musics%2Fwarsaw-university-library-58740.mp3?alt=media&token=a26c1692-dc19-44b6-982d-2289e3edd803",
 };
 
 final globalKey = GlobalKey();
@@ -41,19 +50,23 @@ class RoomScreen extends ConsumerStatefulWidget {
 class _RoomScreenState extends ConsumerState<RoomScreen>
     with WidgetsBindingObserver {
   final _pageController = PageController(initialPage: 0);
-  late AudioPlayer _audioPlayer;
+  final Map<String, AudioPlayer> audioPlayers = {};
   int _currentTabIndex = 0;
   bool showMusicBox = false;
+
+  late AudioPlayer lofi;
+  late AudioPlayer rain;
+  late AudioPlayer library;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _audioPlayer = AudioPlayer();
     _setUpMusic();
 
     final pomodoro = ref.read(pomodoroProvider);
-    pomodoro.initTimer("pomodoro_test");
+    final pomodoroType = ref.read(roomProvider).room!.pomodoroType;
+    pomodoro.initTimer(pomodoroType);
     pomodoro.startTimer(context);
   }
 
@@ -61,7 +74,7 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    _audioPlayer.dispose();
+    audioPlayers.forEach((name, player) => player.dispose());
     _pageController.dispose();
   }
 
@@ -112,19 +125,29 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
   }
 
   Future<void> _setUpMusic() async {
-    await _audioPlayer.setUrl(
-      "https://firebasestorage.googleapis.com/v0/b/studie-a9c68.appspot.com/o/lofis%2FMorning-Routine-Lofi-Study-Music.mp3?alt=media&token=c8eb9b4b-b7aa-46d2-98a8-d2c3cc50d323",
-    );
+    try {
+      lofi = AudioPlayer();
+      rain = AudioPlayer();
+      library = AudioPlayer();
+      await lofi.setUrl(sounds["lofi"]!);
+      await rain.setUrl(sounds['rain']!);
+      await library.setUrl(sounds['library']!);
+      audioPlayers.addAll({"lofi": lofi, "rain": rain, "library": library});
+    } catch (e) {
+      debugPrint("error setting up audio service: $e");
+    }
   }
 
-  void _onMusicStart() {
-    if (_audioPlayer.playing) return;
-    _audioPlayer.setLoopMode(LoopMode.one);
-    _audioPlayer.play();
+  void _onMusicStart(double volume, String name) {
+    audioPlayers[name]!.setVolume(volume);
+    if (!audioPlayers[name]!.playing) {
+      audioPlayers[name]!.setLoopMode(LoopMode.one);
+      audioPlayers[name]!.play();
+    }
   }
 
-  void _onMusicStop() async {
-    _audioPlayer.stop();
+  void _onMusicStop(String name) {
+    audioPlayers[name]!.pause();
   }
 
   @override
@@ -178,12 +201,15 @@ class _RoomScreenState extends ConsumerState<RoomScreen>
               ],
             ),
           ),
-          Visibility(
-            visible: showMusicBox,
-            child: MusicBox(
-              hideBox: _onDisplayMusicBox,
-              startMusic: _onMusicStart,
-              stopMusic: _onMusicStop,
+          Tooltip(
+            message: "Chức năng đang hoàn thiện...",
+            child: Visibility(
+              visible: showMusicBox,
+              child: MusicBox(
+                hideBox: _onDisplayMusicBox,
+                startMusic: _onMusicStart,
+                stopMusic: _onMusicStop,
+              ),
             ),
           ),
         ],

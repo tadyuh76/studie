@@ -11,8 +11,17 @@ import 'package:studie/widgets/hide_scrollbar.dart';
 import 'package:studie/widgets/message_box.dart';
 import 'package:studie/widgets/note_shared.dart';
 
-class ChatsPage extends ConsumerWidget {
-  ChatsPage({super.key});
+class ChatsPage extends ConsumerStatefulWidget {
+  const ChatsPage({super.key});
+
+  @override
+  ConsumerState<ChatsPage> createState() => _ChatsPageState();
+}
+
+class _ChatsPageState extends ConsumerState<ChatsPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
   final _messageController = TextEditingController();
 
@@ -24,7 +33,8 @@ class ChatsPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    super.build(context);
     final roomId = ref.read(roomProvider).room!.id;
 
     return Scaffold(

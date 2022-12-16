@@ -5,8 +5,8 @@ import 'package:studie/constants/colors.dart';
 
 class MusicBox extends StatefulWidget {
   final VoidCallback hideBox;
-  final VoidCallback startMusic;
-  final VoidCallback stopMusic;
+  final void Function(double, String) startMusic;
+  final void Function(String) stopMusic;
   const MusicBox({
     super.key,
     required this.hideBox,
@@ -19,8 +19,13 @@ class MusicBox extends StatefulWidget {
 }
 
 class _MusicBoxState extends State<MusicBox> {
-  double volume = 0;
-  bool get mute => volume == 0;
+  double lofi = 0;
+  double library = 0;
+  double rain = 0;
+
+  bool get lofiMute => lofi == 0;
+  bool get libraryMute => library == 0;
+  bool get rainMute => rain == 0;
 
   @override
   Widget build(BuildContext context) {
@@ -77,20 +82,20 @@ class _MusicBoxState extends State<MusicBox> {
                 Row(
                   children: [
                     Icon(
-                      mute ? Icons.volume_off_rounded : Icons.volume_up,
+                      libraryMute ? Icons.volume_off_rounded : Icons.volume_up,
                       color: kDarkGrey,
                     ),
                     Expanded(
                       child: Slider(
-                        value: volume,
+                        value: lofi,
                         onChanged: (value) {
                           if (value > 0) {
-                            widget.startMusic();
+                            widget.startMusic(value, "lofi");
                           } else {
-                            widget.stopMusic();
+                            widget.stopMusic("lofi");
                           }
                           setState(() {
-                            volume = value;
+                            lofi = value;
                           });
                         },
                       ),
@@ -99,23 +104,26 @@ class _MusicBoxState extends State<MusicBox> {
                 ),
                 const SizedBox(height: kMediumPadding),
                 const Text(
-                  "📚 Không khí thư viện",
+                  "📚 Thư viện",
                   style: TextStyle(fontSize: 14),
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.volume_off_rounded, color: kDarkGrey),
+                    Icon(
+                      libraryMute ? Icons.volume_off_rounded : Icons.volume_up,
+                      color: kDarkGrey,
+                    ),
                     Expanded(
                       child: Slider(
-                        value: 0,
+                        value: library,
                         onChanged: (value) {
                           if (value > 0) {
-                            widget.startMusic();
+                            widget.startMusic(value, "library");
                           } else {
-                            widget.stopMusic();
+                            widget.stopMusic("library");
                           }
                           setState(() {
-                            volume = value;
+                            library = value;
                           });
                         },
                       ),
@@ -124,23 +132,26 @@ class _MusicBoxState extends State<MusicBox> {
                 ),
                 const SizedBox(height: kMediumPadding),
                 const Text(
-                  "🌧️ Tiếng mưa",
+                  "🌧️ Mưa",
                   style: TextStyle(fontSize: 14),
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.volume_off_rounded, color: kDarkGrey),
+                    Icon(
+                      rainMute ? Icons.volume_off_rounded : Icons.volume_up,
+                      color: kDarkGrey,
+                    ),
                     Expanded(
                       child: Slider(
-                        value: 0,
+                        value: rain,
                         onChanged: (value) {
                           if (value > 0) {
-                            widget.startMusic();
+                            widget.startMusic(value, "rain");
                           } else {
-                            widget.stopMusic();
+                            widget.stopMusic("rain");
                           }
                           setState(() {
-                            volume = value;
+                            rain = value;
                           });
                         },
                       ),

@@ -66,7 +66,10 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     final room = Room(
       name: _nameController.text,
       bannerColor: bannerColor,
+      fileUrl: "",
+      fileType: "",
       description: _descriptionController.text,
+      pomodoroType: pomodoroType,
       tags: selectedTags,
       maxParticipants: int.parse(_maxParticipantsController.text),
       curParticipants: 0,
