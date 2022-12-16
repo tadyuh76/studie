@@ -82,7 +82,7 @@ class _MusicBoxState extends State<MusicBox> {
                 Row(
                   children: [
                     Icon(
-                      libraryMute ? Icons.volume_off_rounded : Icons.volume_up,
+                      lofi == 0 ? Icons.volume_off_rounded : Icons.volume_up,
                       color: kDarkGrey,
                     ),
                     Expanded(
@@ -110,7 +110,7 @@ class _MusicBoxState extends State<MusicBox> {
                 Row(
                   children: [
                     Icon(
-                      libraryMute ? Icons.volume_off_rounded : Icons.volume_up,
+                      library == 0 ? Icons.volume_off_rounded : Icons.volume_up,
                       color: kDarkGrey,
                     ),
                     Expanded(
@@ -138,7 +138,7 @@ class _MusicBoxState extends State<MusicBox> {
                 Row(
                   children: [
                     Icon(
-                      rainMute ? Icons.volume_off_rounded : Icons.volume_up,
+                      rain == 0 ? Icons.volume_off_rounded : Icons.volume_up,
                       color: kDarkGrey,
                     ),
                     Expanded(

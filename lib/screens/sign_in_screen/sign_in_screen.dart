@@ -35,14 +35,14 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> onSignUp() async {
     setState(() => _loading = true);
     final result = await _authMethods.signUp(email: email, password: password);
-    if (result != "success" && mounted) showSnackBar(context, "result");
+    if (result != "success" && mounted) showSnackBar(context, result);
     setState(() => _loading = false);
   }
 
   Future<void> signInWithGoogle() async {
     setState(() => _loading = true);
     final result = await _authMethods.signInWithGoogle();
-    if (result != "success" && mounted) showSnackBar(context, "result");
+    if (result != "success" && mounted) showSnackBar(context, result);
     setState(() => _loading = false);
   }
 
