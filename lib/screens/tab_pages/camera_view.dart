@@ -33,7 +33,8 @@ class _State extends ConsumerState<CameraViewPage>
   bool _isReadyPreview = false, _permissionsGranted = true;
 
   bool isJoined = false, switchCamera = true, switchRender = true;
-  Set<int> remoteUid = {};
+  List<int> remoteUids = [];
+  Map<int, String> participantNames = {};
 
   @override
   bool get wantKeepAlive => true;
@@ -44,6 +45,7 @@ class _State extends ConsumerState<CameraViewPage>
     _user = ref.read(userProvider).user;
     _room = ref.read(roomProvider).room!;
 
+    _requestPermissions();
     _initEngine();
   }
 
@@ -58,14 +60,7 @@ class _State extends ConsumerState<CameraViewPage>
     await _engine.release();
   }
 
-  Future<void> _settingsCall() async {
-    final roomSettings = ref.read(roomSettingsProvider);
-    if (roomSettings.cameraEnabled) await _engine.enableVideo();
-    if (roomSettings.micEnabled) await _engine.enableAudio();
-    if (roomSettings.switchCamera) await _engine.switchCamera();
-  }
-
-  Future<void> _initEngine() async {
+  Future<void> _requestPermissions() async {
     final status = await [Permission.camera, Permission.microphone].request();
     status.forEach((key, value) {
       if (value != PermissionStatus.granted) {
@@ -77,18 +72,26 @@ class _State extends ConsumerState<CameraViewPage>
         return setState(() {});
       }
     });
+  }
 
-    await _engine.initialize(const RtcEngineContext(appId: appId));
-    await _engine.leaveChannel();
+  Future<void> _settingsCall() async {
+    final roomSettings = ref.read(roomSettingsProvider);
+    if (roomSettings.cameraEnabled) await _engine.enableVideo();
+    if (roomSettings.micEnabled) await _engine.enableAudio();
+    if (roomSettings.switchCamera) await _engine.switchCamera();
+  }
 
+  void _registerEventHandlers() {
     _engine.registerEventHandler(RtcEngineEventHandler(
       onError: (ErrorCodeType err, String msg) {
         debugPrint('[onError] err: $err, msg: $msg');
       },
       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
+        debugPrint("joined successfully, id: ${connection.localUid}");
         debugPrint(
             '[onJoinChannelSuccess] connection: ${connection.toJson()} elapsed: $elapsed');
         setState(() {
+          participantNames[connection.localUid!] = _user.username;
           isJoined = true;
         });
       },
@@ -96,7 +99,7 @@ class _State extends ConsumerState<CameraViewPage>
         debugPrint(
             '[onUserJoined] connection: ${connection.toJson()} remoteUid: $rUid elapsed: $elapsed');
         setState(() {
-          remoteUid.add(rUid);
+          remoteUids.add(rUid);
         });
       },
       onUserOffline:
@@ -104,7 +107,7 @@ class _State extends ConsumerState<CameraViewPage>
         debugPrint(
             '[onUserOffline] connection: ${connection.toJson()}  rUid: $rUid reason: $reason');
         setState(() {
-          remoteUid.removeWhere((element) => element == rUid);
+          remoteUids.removeWhere((element) => element == rUid);
         });
       },
       onLeaveChannel: (RtcConnection connection, RtcStats stats) {
@@ -112,10 +115,16 @@ class _State extends ConsumerState<CameraViewPage>
             '[onLeaveChannel] connection: ${connection.toJson()} stats: ${stats.toJson()}');
         setState(() {
           isJoined = false;
-          remoteUid.clear();
+          remoteUids.clear();
         });
       },
     ));
+  }
+
+  Future<void> _initEngine() async {
+    await _engine.initialize(const RtcEngineContext(appId: appId));
+    await _engine.leaveChannel();
+    _registerEventHandlers();
 
     await _engine.setVideoEncoderConfiguration(
       const VideoEncoderConfiguration(
@@ -124,33 +133,25 @@ class _State extends ConsumerState<CameraViewPage>
         bitrate: 0,
       ),
     );
-    await _engine.disableAudio();
-    await _engine.disableVideo();
+    // await _engine.disableAudio();
+    // await _engine.disableVideo();
+    await _engine.enableAudio();
+    await _engine.enableVideo();
     await _engine.startPreview();
-    setState(() {
-      _isReadyPreview = true;
-    });
+    setState(() => _isReadyPreview = true);
 
     await _settingsCall();
     await _joinChannel();
   }
 
   Future<void> _joinChannel() async {
-    // final userName = ref.read(userProvider).user;
-    // await _engine.registerLocalUserAccount(appId: appId, userAccount: userName);
-    // await _engine.joinChannelWithUserAccount(
-    //   token: tempToken,
-    //   channelId: channelName,
-    //   userAccount: userName,
-    // );
-
+    print("remote uid: $remoteUids");
     await _engine.joinChannel(
       token: tempToken,
       channelId: channelName,
       uid: _room.curParticipants,
       options: ChannelMediaOptions(
-        channelProfile: ChannelProfileType.channelProfileCommunication,
-        clientRoleType: _room.hostUid == _user.uid
+        clientRoleType: remoteUids.isEmpty
             ? ClientRoleType.clientRoleBroadcaster
             : ClientRoleType.clientRoleAudience,
       ),
@@ -164,24 +165,13 @@ class _State extends ConsumerState<CameraViewPage>
 
   Future<void> onCameraTap() async {
     final cameraEnabled = ref.read(roomSettingsProvider).cameraEnabled;
-    if (cameraEnabled) {
-      await _engine.disableVideo();
-    } else {
-      await _engine.enableVideo();
-    }
-
+    // await _engine.muteLocalVideoStream(cameraEnabled);
     ref.read(roomSettingsProvider).updateCamera();
   }
 
   Future<void> onMicTap() async {
     final micEnabled = ref.read(roomSettingsProvider).micEnabled;
-
-    if (micEnabled) {
-      await _engine.disableAudio();
-    } else {
-      await _engine.enableAudio();
-    }
-
+    // await _engine.muteLocalAudioStream(micEnabled);
     ref.read(roomSettingsProvider).updateMic();
   }
 
@@ -225,90 +215,128 @@ class _State extends ConsumerState<CameraViewPage>
     final videoWidth = size.width - kDefaultPadding;
     final videoHeight = videoWidth * 9 / 16;
 
-    return !_isReadyPreview
-        ? const LoadingScreen()
-        : Container(
-            color: kBlack,
-            padding: const EdgeInsets.all(kMediumPadding),
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    if (roomSettings.cameraEnabled)
-                      SizedBox(
-                        height: videoHeight,
-                        width: videoWidth,
-                        child: AgoraVideoView(
-                          controller: VideoViewController(
-                            rtcEngine: _engine,
-                            canvas: const VideoCanvas(uid: 0),
-                          ),
+    if (!_isReadyPreview) return const LoadingScreen();
+    return Container(
+      color: kBlack,
+      padding: const EdgeInsets.all(kMediumPadding),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              if (isJoined)
+                SizedBox(
+                  height: videoHeight,
+                  width: videoWidth,
+                  child: Stack(
+                    children: [
+                      AgoraVideoView(
+                        controller: VideoViewController(
+                          rtcEngine: _engine,
+                          canvas: const VideoCanvas(uid: 0),
                         ),
                       ),
-                    if (roomSettings.cameraEnabled)
                       Align(
-                        alignment: Alignment.topLeft,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: List.of(remoteUid.map(
-                              (e) => Padding(
-                                padding:
-                                    const EdgeInsets.only(top: kMediumPadding),
-                                child: SizedBox(
-                                  width: videoWidth,
-                                  height: videoHeight,
-                                  child: AgoraVideoView(
-                                    controller: VideoViewController.remote(
-                                      rtcEngine: _engine,
-                                      canvas: VideoCanvas(uid: e),
-                                      connection: const RtcConnection(
-                                        channelId: channelName,
-                                      ),
-                                    ),
+                        alignment: Alignment.bottomLeft,
+                        child: Container(
+                          padding: const EdgeInsets.all(kSmallPadding),
+                          decoration: BoxDecoration(
+                            color: kBlack.withOpacity(0.8),
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(5),
+                            ),
+                          ),
+                          child: Text(
+                            _user.username,
+                            style: const TextStyle(fontSize: 12, color: kWhite),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.of(remoteUids.map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.only(top: kMediumPadding),
+                        child: SizedBox(
+                          width: videoWidth,
+                          height: videoHeight,
+                          child: Stack(
+                            children: [
+                              AgoraVideoView(
+                                controller: VideoViewController.remote(
+                                  rtcEngine: _engine,
+                                  canvas: VideoCanvas(uid: e),
+                                  connection: const RtcConnection(
+                                    channelId: channelName,
                                   ),
                                 ),
                               ),
-                            )),
+                              Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Container(
+                                  padding: const EdgeInsets.all(kSmallPadding),
+                                  decoration: BoxDecoration(
+                                    color: kBlack.withOpacity(0.8),
+                                    borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(5),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    participantNames[e]!,
+                                    style: const TextStyle(
+                                        fontSize: 12, color: kWhite),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: kDefaultPadding),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _CallButton(
-                          onTap: onCameraTap,
-                          disabledIcon: Icons.videocam_off_rounded,
-                          enabledIcon: Icons.videocam_rounded,
-                          enabled: roomSettings.cameraEnabled,
-                        ),
-                        const SizedBox(width: kDefaultPadding),
-                        _CallButton(
-                          onTap: onMicTap,
-                          disabledIcon: Icons.mic_off_rounded,
-                          enabledIcon: Icons.mic_rounded,
-                          enabled: roomSettings.micEnabled,
-                        ),
-                        const SizedBox(width: kDefaultPadding),
-                        _CallButton(
-                          onTap: onSwitchCameraTap,
-                          disabledIcon: Icons.switch_camera,
-                          enabledIcon: Icons.switch_camera,
-                          enabled: true,
-                        ),
-                      ],
-                    ),
+                    )),
                   ),
-                )
-              ],
+                ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: kDefaultPadding),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _CallButton(
+                    onTap: onCameraTap,
+                    disabledIcon: Icons.videocam_off_rounded,
+                    enabledIcon: Icons.videocam_rounded,
+                    enabled: roomSettings.cameraEnabled,
+                  ),
+                  const SizedBox(width: kDefaultPadding),
+                  _CallButton(
+                    onTap: onMicTap,
+                    disabledIcon: Icons.mic_off_rounded,
+                    enabledIcon: Icons.mic_rounded,
+                    enabled: roomSettings.micEnabled,
+                  ),
+                  const SizedBox(width: kDefaultPadding),
+                  _CallButton(
+                    onTap: onSwitchCameraTap,
+                    disabledIcon: Icons.switch_camera,
+                    enabledIcon: Icons.switch_camera,
+                    enabled: true,
+                  ),
+                ],
+              ),
             ),
-          );
+          )
+        ],
+      ),
+    );
   }
 }
 
