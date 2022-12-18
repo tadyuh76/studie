@@ -15,6 +15,7 @@ class Room {
   final String type;
   final String hostPhotoUrl;
   final String hostUid;
+  final String rtcToken;
 
   Room({
     required this.hostUid,
@@ -29,6 +30,7 @@ class Room {
     required this.curParticipants,
     required this.type,
     required this.hostPhotoUrl,
+    required this.rtcToken,
   });
 
   String get id => _id;
@@ -49,6 +51,7 @@ class Room {
       "type": type,
       "hostUid": hostUid,
       "hostPhotoUrl": hostPhotoUrl,
+      "rtcToken": rtcToken,
     };
   }
 
@@ -66,6 +69,7 @@ class Room {
       type: json['type'],
       hostUid: json['hostUid'],
       hostPhotoUrl: json['hostPhotoUrl'],
+      rtcToken: json['rtcToken'],
     );
     room._id = json["id"];
     return room;

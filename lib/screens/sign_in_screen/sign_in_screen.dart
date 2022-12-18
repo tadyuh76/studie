@@ -164,8 +164,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      LoginButton(iconName: "facebook", onTap: () {}),
-                      const SizedBox(width: kDefaultPadding),
+                      // LoginButton(iconName: "facebook", onTap: () {}),
+                      // const SizedBox(width: kDefaultPadding),
                       LoginButton(iconName: 'google', onTap: signInWithGoogle),
                     ],
                   ),

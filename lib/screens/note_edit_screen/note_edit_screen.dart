@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +11,7 @@ import 'package:studie/models/note.dart';
 import 'package:studie/providers/room_provider.dart';
 import 'package:studie/screens/flashcard_screen/flashcard_screen.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
+import 'package:studie/services/auth_methods.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/utils/show_custom_dialogs.dart';
 import 'package:studie/utils/show_snack_bar.dart';
@@ -66,7 +69,7 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     if (saved) setState(() => saved = false);
   }
 
-  void _onSaved() async {
+  Future<void> _onSaved() async {
     setState(() => saving = true);
 
     _dismissKeyboard();
@@ -154,9 +157,12 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
             CustomTextButton(
               text: "Lưu và thoát",
               primary: true,
-              onTap: () {
-                _onSaved();
-                Navigator.of(context).pop();
+              onTap: () async {
+                await _onSaved();
+                if (mounted) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
@@ -188,9 +194,9 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     return [
       IconButton(
         splashRadius: kIconSize,
-        onPressed: () {},
+        onPressed: () => _onDelete(context),
         icon: SvgPicture.asset(
-          "assets/icons/color.svg",
+          "assets/icons/trash_bin.svg",
           height: kIconSize,
           width: kIconSize,
         ),
@@ -248,6 +254,50 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
         icon: const Icon(Icons.redo, color: kDarkGrey, size: kIconSize),
       ),
     ];
+  }
+
+  void _onDelete(BuildContext context) {
+    showCustomDialog(
+      context: context,
+      dialog: CustomDialog(
+        title: "Xóa tài liệu này?",
+        child: Row(
+          children: [
+            Expanded(
+              child: CustomTextButton(
+                text: "Xóa",
+                onTap: _deleteNote,
+                primary: true,
+              ),
+            ),
+            const SizedBox(width: kDefaultPadding),
+            Expanded(
+              child: CustomTextButton(
+                text: "Trở lại",
+                onTap: () => Navigator.pop(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _deleteNote() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(AuthMethods().user!.uid)
+          .collection("notes")
+          .doc(widget.note.id)
+          .delete();
+      if (mounted) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      debugPrint("error deleting note: $e");
+    }
   }
 
   void _dismissKeyboard() {
@@ -335,7 +385,8 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintStyle: TextStyle(color: kDarkGrey),
-                      hintText: "Nhập nội dung...",
+                      hintText:
+                          "Nhập nội dung...\n(Nhập dấu \">>\" để tạo Flashcard.)",
                     ),
                     style: const TextStyle(
                       height: 1.5,

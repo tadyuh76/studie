@@ -9,6 +9,7 @@ import 'package:studie/providers/room_provider.dart';
 import 'package:studie/providers/user_provider.dart';
 import 'package:studie/screens/create_room_screen/widgets/checkbox_option.dart';
 import 'package:studie/screens/room_screen/room_screen.dart';
+import 'package:studie/services/agora_token_server.dart';
 import 'package:studie/services/db_methods.dart';
 import 'package:studie/utils/show_snack_bar.dart';
 import 'package:studie/widgets/auth/auth_text_button.dart';
@@ -63,6 +64,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   onCreateRoom(BuildContext context, WidgetRef ref) async {
     final user = ref.read(userProvider).user;
+    final rtcToken = await AgoraTokenServer.fetchToken(user.uid);
     final room = Room(
       name: _nameController.text,
       bannerColor: bannerColor,
@@ -76,6 +78,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       type: 'public',
       hostPhotoUrl: user.photoURL,
       hostUid: user.uid,
+      rtcToken: rtcToken,
     );
 
     final created = await _dbMethods.createRoom(room);
